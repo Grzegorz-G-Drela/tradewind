@@ -42,7 +42,18 @@ ws.on('message', async (data) => {
         timestamp: aisMessage.MetaData.time_utc,
     }
 
-    console.log(position);
+    const vesselId = await findOrCreateVessel(position.mmsi);
+
+    await db.insert(vessel_positions).values({
+        vessel_id: vesselId,
+        lat: position.latitude,
+        lon: position.longitude,
+        speed: position.sog,
+        heading: Math.round(position.cog),
+        timestamp: new Date(position.timestamp),
+    });
+
+    console.log(`Saved position for MMSI ${position.mmsi}`);
 });
 
 ws.on('error', (err) => {
