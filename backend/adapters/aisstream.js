@@ -7,6 +7,9 @@ import WebSocket from 'ws';
 
 const ws = new WebSocket('wss://stream.aisstream.io/v0/stream');
 
+const lastWriteTime = new Map();
+const THROTTLE_MS = 60 * 1000;
+
 async function findOrCreateVessel(mmsi) {
     const existing = await db.select().from(vessels).where(eq(vessels.mmsi, String(mmsi)));
 
@@ -22,13 +25,14 @@ async function findOrCreateVessel(mmsi) {
 ws.on('open', () => {
     const subscriptionMessage = {
         APIKey: process.env.AISSTREAM_API_KEY,
-        BoundingBoxes: [[[49.9, 1.4], [51.1, 2.0]]]
+        BoundingBoxes: [[[48.0, -5.0], [52.0, 5.0]]]
     };
     ws.send(JSON.stringify(subscriptionMessage));
     console.log('Connected and subscribed to AIS stream')
 });
 
 ws.on('message', async (data) => {
+    console.log('Message received');
     const aisMessage = JSON.parse(data);
 
     if (aisMessage.MessageType !== 'PositionReport') return;
@@ -42,6 +46,15 @@ ws.on('message', async (data) => {
         timestamp: aisMessage.MetaData.time_utc,
     }
 
+    const now = Date.now();
+    const lastWrite = lastWriteTime.get(position.mmsi);
+
+    if (lastWrite && now - lastWrite < THROTTLE_MS) {
+        return;
+    }
+
+    lastWriteTime.set(position.mmsi, now);
+    
     const vesselId = await findOrCreateVessel(position.mmsi);
 
     await db.insert(vessel_positions).values({
