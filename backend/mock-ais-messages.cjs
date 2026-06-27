@@ -1,4 +1,4 @@
-export const mockAisMessages = [
+const mockAisMessages = [
     {
         MessageType: 'PositionReport',
         Message: {
@@ -127,3 +127,4 @@ export const mockAisMessages = [
     },
 ];
 
+module.exports = mockAisMessages;
