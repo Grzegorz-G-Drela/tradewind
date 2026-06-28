@@ -49,42 +49,66 @@ if (USE_MOCK) {
     ws = new EventEmitter();
 }
 
+const seen = new Set();
+
 ws.on('message', async (data) => {
     // console.log('Message received');
     const aisMessage = JSON.parse(data);
 
-    if (aisMessage.MessageType !== 'PositionReport') return;
+    if (aisMessage.MessageType === 'PositionReport') {
+        const positionData = {
+            mmsi: aisMessage.MetaData.MMSI,
+            latitude: aisMessage.Message.PositionReport.Latitude,
+            longitude: aisMessage.Message.PositionReport.Longitude,
+            sog: aisMessage.Message.PositionReport.Sog,
+            cog: aisMessage.Message.PositionReport.Cog,
+            timestamp: aisMessage.MetaData.time_utc,
+        };
 
-    const position = {
-        mmsi: aisMessage.MetaData.MMSI,
-        latitude: aisMessage.Message.PositionReport.Latitude,
-        longitude: aisMessage.Message.PositionReport.Longitude,
-        sog: aisMessage.Message.PositionReport.Sog,
-        cog: aisMessage.Message.PositionReport.Cog,
-        timestamp: aisMessage.MetaData.time_utc,
+        const now = Date.now();
+        const lastWrite = lastWriteTime.get(positionData.mmsi);
+
+        if (lastWrite && now - lastWrite < THROTTLE_MS) return;
+
+        lastWriteTime.set(positionData.mmsi, now);
+
+        const vesselId = await findOrCreateVessel(positionData.mmsi);
+
+        await db.insert(vessel_positions).values({
+            vessel_id: vesselId,
+            lat: positionData.latitude,
+            lon: positionData.longitude,
+            speed: positionData.sog,
+            heading: Math.round(positionData.cog),
+            timestamp: new Date(positionData.timestamp),
+        });
+
+        console.log(`Saved position for MMSI ${positionData.mmsi}`);
+
+    } else if (aisMessage.MessageType === 'ShipStaticData') {
+        const staticData = {
+            name: aisMessage.MetaData.ShipName,
+            mmsi: aisMessage.MetaData.MMSI,
+            imo: aisMessage.Message.ShipStaticData.ImoNumber,
+            vessel_type: aisMessage.Message.ShipStaticData.Type,
+            length: aisMessage.Message.ShipStaticData.Dimension.A +
+                aisMessage.Message.ShipStaticData.Dimension.B,
+            width: aisMessage.Message.ShipStaticData.Dimension.C +
+                aisMessage.Message.ShipStaticData.Dimension.D
+        };
+
+        const vesselId = await findOrCreateVessel(staticData.mmsi);
+        await db.update(vessels).set({
+            name: staticData.name,
+            mmsi: String(staticData.mmsi),
+            imo: String(staticData.imo),
+            vessel_type: String(staticData.vessel_type),
+            length: staticData.length,
+            width: staticData.width,
+        })
+            .where(eq(vessels.mmsi, String(staticData.mmsi)));
+        console.log(`Updated static data for MMSI ${staticData.mmsi}`);
     };
-
-    const now = Date.now();
-    const lastWrite = lastWriteTime.get(position.mmsi);
-
-    if (lastWrite && now - lastWrite < THROTTLE_MS) {
-        return;
-    }
-
-    lastWriteTime.set(position.mmsi, now);
-
-    const vesselId = await findOrCreateVessel(position.mmsi);
-
-    await db.insert(vessel_positions).values({
-        vessel_id: vesselId,
-        lat: position.latitude,
-        lon: position.longitude,
-        speed: position.sog,
-        heading: Math.round(position.cog),
-        timestamp: new Date(position.timestamp),
-    });
-
-    console.log(`Saved position for MMSI ${position.mmsi}`);
 });
 
 if (!USE_MOCK) {
