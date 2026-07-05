@@ -40,8 +40,10 @@ const port_calls = pgTable('port_calls', {
 
 const trade_flows = pgTable('trade_flows', {
     id: serial('id').primaryKey(),
-    reporter_country: varchar('reporter_country', { length: 2 }).notNull(),
-    partner_country: varchar('partner_country', { length: 2 }).notNull(),
+    reporter_code:integer('reporter_code').notNull(),
+    // reporter_country: varchar('reporter_country', { length: 2 }).notNull(),
+    partner_code: integer('partner_code').notNull(),
+    // partner_country: varchar('partner_country', { length: 2 }).notNull(),
     commodity_code: varchar('commodity_code', { length: 10 }).notNull(),
     trade_value_usd: decimal('trade_value_usd', { precision: 20, scale: 2 }),
     year: integer('year').notNull(),

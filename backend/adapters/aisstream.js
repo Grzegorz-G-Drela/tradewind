@@ -1,11 +1,15 @@
 import { db } from '../db.js';
 import { vessels, vessel_positions } from '../schema.js';
 import { eq } from 'drizzle-orm';
-import dotenv from 'dotenv';
-dotenv.config({ path: new URL('../.env', import.meta.url).pathname });
 import WebSocket from 'ws';
+
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
+
+import dotenv from 'dotenv';
+dotenv.config({ path: new URL('../.env', import.meta.url).pathname });
+
+// end of imports
 
 const USE_MOCK = process.env.USE_MOCK === 'true';
 
