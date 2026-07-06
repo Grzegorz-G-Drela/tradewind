@@ -1,6 +1,6 @@
+import { eq, and } from 'drizzle-orm';
 import { db } from '../db.js';
 import { trade_flows } from '../schema.js';
-import { eq, and } from 'drizzle-orm';
 import { fetchTradeFlows } from '../adapters/comtrade.js';
 
 export async function getTradeFlows(reportCode, period) {

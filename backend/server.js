@@ -1,22 +1,21 @@
-require('dotenv').config()
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import vesselsRouter from './routes/vessels.js';
+import portsRouter from './routes/ports.js'
+import tradeFlowsRoutes from './routes/tradeFlows.js';
 
-const express = require('express')
-const cors = require('cors')
-const app = express()
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-app.use(cors())
-app.use(express.json())
+app.use('/api/vessels', vesselsRouter);
+app.use('/api/ports', portsRouter);
+app.use('/api/trade-flows', tradeFlowsRoutes);
 
-const vesselsRouter = require('./routes/vessels')
-const portsRouter = require('./routes/ports')
-
-app.use('/api/vessels', vesselsRouter)
-app.use('/api/ports', portsRouter)
-
-const PORT = process.env.PORT
-
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
-})
+});
 
  
