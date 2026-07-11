@@ -17,7 +17,3 @@ async function fetchTradeFlows(reporterCode, period) {
 export { fetchTradeFlows };
 
 console.log('Key loaded:', process.env.COMTRADE_API_KEY ? 'yes' : 'no');
-
-fetchTradeFlows(826, 2023).then(data => {
-    console.log(JSON.stringify(data, null, 2));
-});

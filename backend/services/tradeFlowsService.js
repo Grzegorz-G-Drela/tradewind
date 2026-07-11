@@ -3,7 +3,7 @@ import { db } from '../db.js';
 import { trade_flows } from '../schema.js';
 import { fetchTradeFlows } from '../adapters/comtrade.js';
 
-export async function getTradeFlows(reportCode, period) {
+export async function getTradeFlows(reporterCode, period) {
     const existing = await db.select().from(trade_flows).where(
         and(
             eq(trade_flows.reporter_country, reporterCode),
