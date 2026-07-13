@@ -1,8 +1,15 @@
 import { useState, useEffect } from "react";
 
+interface Vessel {
+    id: number;
+    mmsi: string;
+    name: string | null;
+    imo: string | null;
+}
+
 function VesselList() {
-    const [vessels, setVessels] = useState([]);
-    const [loading, setLodaing] = useState(true);
+    const [vessels, setVessels] = useState<Vessel[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetch('api/vessels')
@@ -13,7 +20,18 @@ function VesselList() {
             });
     }, []);
 
-    return <div>Vessel count: {vessels.length}</div>;
+    return (
+        <div>
+            <p>Vessel count : {vessels.length}</p>
+            <ul>
+                {vessels.map((vessel) => (
+                    <li key={vessel.id}>
+                        {vessel.name} - {vessel.mmsi}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
 }
 
 export default VesselList;
