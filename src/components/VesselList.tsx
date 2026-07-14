@@ -12,7 +12,7 @@ function VesselList() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch('api/vessels')
+        fetch('/api/vessels')
             .then(res => res.json())
             .then(data => {
                 setVessels(data);
@@ -22,14 +22,20 @@ function VesselList() {
 
     return (
         <div>
-            <p>Vessel count : {vessels.length}</p>
-            <ul>
-                {vessels.map((vessel) => (
-                    <li key={vessel.id}>
-                        {vessel.name} - {vessel.mmsi}
-                    </li>
-                ))}
-            </ul>
+            {loading ? (
+                <p>Loading vessels...</p>
+            ) : (
+                <>
+                    <p>Vessel count : {vessels.length}</p>
+                    <ul>
+                        {vessels.map((vessel) => (
+                            <li key={vessel.id}>
+                                {vessel.name} - {vessel.mmsi}
+                            </li>
+                        ))}
+                    </ul>
+                </>
+            )}
         </div>
     );
 }
