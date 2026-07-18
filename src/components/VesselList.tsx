@@ -7,7 +7,7 @@ interface Vessel {
     imo: string | null;
 }
 
-function VesselList() {
+function VesselList({ searchTerm }: { searchTerm: string }) {
     const [vessels, setVessels] = useState<Vessel[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -28,7 +28,9 @@ function VesselList() {
                 <>
                     <p>Vessel count : {vessels.length}</p>
                     <ul>
-                        {vessels.map((vessel) => (
+                        {vessels
+                        .filter((vessel) => vessel.mmsi.includes(searchTerm))
+                        .map((vessel) => (
                             <li key={vessel.id}>
                                 {vessel.name} - {vessel.mmsi}
                             </li>
