@@ -20,6 +20,10 @@ function VesselList({ searchTerm }: { searchTerm: string }) {
             });
     }, []);
 
+    const sorted = [...vessels].sort((a, b) =>
+        (a.name ?? '').localeCompare(b.name ?? '')
+    );
+
     return (
         <div>
             {loading ? (
@@ -28,7 +32,7 @@ function VesselList({ searchTerm }: { searchTerm: string }) {
                 <>
                     <p>Vessel count : {vessels.length}</p>
                     <ul>
-                        {vessels
+                        {sorted
                         .filter((vessel) => vessel.mmsi.includes(searchTerm))
                         .map((vessel) => (
                             <li key={vessel.id}>
