@@ -3,7 +3,7 @@ import VesselList from "../components/VesselList";
 
 function Home() {
     const [searchTerm, setSearchTerm] = useState("");
-    const [sortOrder, setSortOrder] = useState<'asc' | 'decs'>('asc');
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
     function toggleSort() {
         setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -24,7 +24,7 @@ function Home() {
                 Sort: {sortOrder === 'asc' ? 'A-Z' : 'Z-A'}
             </button>
 
-            <VesselList searchTerm={searchTerm} />
+            <VesselList searchTerm={searchTerm} sortOrder={sortOrder} />
         </div>
     );
 }
