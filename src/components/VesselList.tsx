@@ -7,7 +7,7 @@ interface Vessel {
     imo: string | null;
 }
 
-function VesselList({ searchTerm, sortOrder }: { searchTerm: string; sortOrder: 'asc' | 'desc' }) {
+function VesselList({ searchTerm, sortOrder, sortField }: { searchTerm: string; sortOrder: 'asc' | 'desc'; sortField: 'name' | 'mmsi' }) {
     const [vessels, setVessels] = useState<Vessel[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -21,8 +21,12 @@ function VesselList({ searchTerm, sortOrder }: { searchTerm: string; sortOrder: 
     }, []);
 
     const sorted = [...vessels].sort((a, b) => {
-        const result = (a.name ?? '').localeCompare(b.name ?? '');
-        console.log(result);
+        let result: number;
+        if (sortField === 'mmsi') {
+            result = a.mmsi.localeCompare(b.mmsi);
+        } else {
+            result = (a.name ?? '').localeCompare(b.name ?? '');
+        }
         return sortOrder === 'asc' ? result : -result;
     });
 
