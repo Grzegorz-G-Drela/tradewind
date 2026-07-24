@@ -10,6 +10,7 @@ interface Vessel {
 function VesselList({ searchTerm, sortOrder, sortField }: { searchTerm: string; sortOrder: 'asc' | 'desc'; sortField: 'name' | 'mmsi' }) {
     const [vessels, setVessels] = useState<Vessel[]>([]);
     const [loading, setLoading] = useState(true);
+    const [region, setRegion] = useState('english-channel');
 
     useEffect(() => {
         fetch('/api/vessels')
@@ -32,6 +33,13 @@ function VesselList({ searchTerm, sortOrder, sortField }: { searchTerm: string; 
 
     return (
         <div>
+            <select value={region} onChange={(e) => setRegion(e.target.value)}>
+                <option value={"english-channel"}>English Channel</option>
+                <option value={"malacca"}>Singapore / Malacca Strait</option>
+                <option value={"hormuz"}>Strait of Hormuz</option>
+                <option value={"suez"}>Suez Canal</option>
+                <option value={"dover"}>Dover Strait</option>
+            </select>
             {loading ? (
                 <p>Loading vessels...</p>
             ) : (
@@ -39,12 +47,12 @@ function VesselList({ searchTerm, sortOrder, sortField }: { searchTerm: string; 
                     <p>Vessel count : {vessels.length}</p>
                     <ul>
                         {sorted
-                        .filter((vessel) => vessel.mmsi.includes(searchTerm))
-                        .map((vessel) => (
-                            <li key={vessel.id}>
-                                {vessel.name} - {vessel.mmsi}
-                            </li>
-                        ))}
+                            .filter((vessel) => vessel.mmsi.includes(searchTerm))
+                            .map((vessel) => (
+                                <li key={vessel.id}>
+                                    {vessel.name} - {vessel.mmsi}
+                                </li>
+                            ))}
                     </ul>
                 </>
             )}
