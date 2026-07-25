@@ -7,7 +7,13 @@ interface Vessel {
     imo: string | null;
 }
 
-function VesselList({ searchTerm, sortOrder, sortField }: { searchTerm: string; sortOrder: 'asc' | 'desc'; sortField: 'name' | 'mmsi' }) {
+function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly }: {
+    searchTerm: string;
+    sortOrder: 'asc' | 'desc';
+    sortField: 'name' | 'mmsi';
+    nameOnly: boolean;
+    imoOnly: boolean;
+}) {
     const [vessels, setVessels] = useState<Vessel[]>([]);
     const [loading, setLoading] = useState(true);
     const [region, setRegion] = useState('english-channel');
@@ -48,6 +54,8 @@ function VesselList({ searchTerm, sortOrder, sortField }: { searchTerm: string; 
                     <ul>
                         {sorted
                             .filter((vessel) => vessel.mmsi.includes(searchTerm))
+                            .filter((vessel) => !nameOnly || vessel.name !== null)
+                            .filter((vessel) => !imoOnly || vessel.imo !== null)
                             .map((vessel) => (
                                 <li key={vessel.id}>
                                     {vessel.name} - {vessel.mmsi}
