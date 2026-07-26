@@ -127,4 +127,4 @@ const mockAisMessages = [
     },
 ];
 
-module.exports = mockAisMessages;
+export default mockAisMessages;
