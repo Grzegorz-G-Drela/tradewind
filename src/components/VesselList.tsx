@@ -31,6 +31,8 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly }: {
         let result: number;
         if (sortField === 'mmsi') {
             result = a.mmsi.localeCompare(b.mmsi);
+        } else if (a.name === b.name) {
+            result = a.mmsi.localeCompare(b.mmsi);
         } else {
             result = (a.name ?? '').localeCompare(b.name ?? '');
         }
