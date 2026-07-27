@@ -77,6 +77,9 @@ const midToFlag = { // MID = maritime identification digits (first 3 digits of t
   770: 'Uruguay', 775: 'Venezuela',
 };
 
+// full ITU country list 
+// ITU is International Telecommunication Union that manages global telecom/radio standards, including assigning MID codes to countries
+
 function getFlagFromMmsi(mmsi) {
     const mid = mmsi.toString().slice(0, 3);
     return midToFlag[mid] || 'Unknown';

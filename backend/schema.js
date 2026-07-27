@@ -6,9 +6,9 @@ const vessels = pgTable('vessels', {
     name: varchar('name', { length: 255 }),
     imo: varchar('imo', { length: 10 }),
     vessel_type: varchar('vessel_type', { length: 100 }),
-    flag: varchar('flag', { length: 3 }),
+    flag: varchar('flag', { length: 50 }),
     length: integer('length'),
-    width: integer('width')
+    width: integer('width'),
 });
 
 const vessel_positions = pgTable('vessel_positions', {
@@ -41,9 +41,7 @@ const port_calls = pgTable('port_calls', {
 const trade_flows = pgTable('trade_flows', {
     id: serial('id').primaryKey(),
     reporter_code:integer('reporter_code').notNull(),
-    // reporter_country: varchar('reporter_country', { length: 2 }).notNull(),
     partner_code: integer('partner_code').notNull(),
-    // partner_country: varchar('partner_country', { length: 2 }).notNull(),
     commodity_code: varchar('commodity_code', { length: 10 }).notNull(),
     trade_value_usd: decimal('trade_value_usd', { precision: 20, scale: 2 }),
     year: integer('year').notNull(),
