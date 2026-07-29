@@ -2,6 +2,7 @@ import { db } from '../db.js';
 import { vessels, vessel_positions } from '../schema.js';
 import { eq } from 'drizzle-orm';
 import WebSocket from 'ws';
+import { getFlagFromMmsi } from '../flagLookup.js';
 
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -32,7 +33,10 @@ async function findOrCreateVessel(mmsi) {
         return existing[0].id;
     }
 
-    await db.insert(vessels).values({ mmsi: String(mmsi) });
+    await db.insert(vessels).values({
+        mmsi: String(mmsi),
+        flag: getFlagFromMmsi(mmsi),
+    });
     const created = await db.select().from(vessels).where(eq(vessels.mmsi, String(mmsi)));
     return created[0].id;
 }
