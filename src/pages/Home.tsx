@@ -7,6 +7,7 @@ function Home() {
     const [sortField, setSortField] = useState<'name' | 'mmsi'>('name');
     const [nameOnly, setNameOnly] = useState<boolean>(false);
     const [imoOnly, setImoOnly] = useState<boolean>(false);
+    const [hasFlag, setHasFlag] = useState(false);
 
     function toggleSort() {
         setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -47,6 +48,15 @@ function Home() {
                     onChange={(e) => setImoOnly(e.target.checked)}
                 />
                 Has IMO only
+            </label>
+
+            <label>
+                <input
+                    type='checkbox'
+                    checked={hasFlag}
+                    onChange={(e) => setHasFlag(e.target.checked)}
+                />
+                Has Flag
             </label>
 
             <VesselList
