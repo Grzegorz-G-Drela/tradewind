@@ -1,6 +1,7 @@
 import { pgTable, serial, varchar, integer, decimal, timestamp, text } from 'drizzle-orm/pg-core';
 
 const vessels = pgTable('vessels', {
+    created_at: timestamp('created_at').defaultNow().notNull(),
     id: serial('id').primaryKey(),
     mmsi: varchar('mmsi', { length: 9 }).notNull(),
     name: varchar('name', { length: 255 }),
