@@ -65,6 +65,7 @@ function Home() {
                 sortOrder={sortOrder}
                 nameOnly={nameOnly}
                 imoOnly={imoOnly}
+                hasFlag={hasFlag}
             />
         </div>
     );

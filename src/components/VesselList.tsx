@@ -7,12 +7,13 @@ interface Vessel {
     imo: string | null;
 }
 
-function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly }: {
+function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFlag }: {
     searchTerm: string;
     sortOrder: 'asc' | 'desc';
     sortField: 'name' | 'mmsi';
     nameOnly: boolean;
     imoOnly: boolean;
+    hasFlag: boolean;
 }) {
     const [vessels, setVessels] = useState<Vessel[]>([]);
     const [loading, setLoading] = useState(true);
@@ -58,6 +59,7 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly }: {
                             .filter((vessel) => vessel.mmsi.includes(searchTerm))
                             .filter((vessel) => !nameOnly || vessel.name !== null)
                             .filter((vessel) => !imoOnly || vessel.imo !== null)
+                            .filter((vessel) => !hasFlag || vessel.flag !== null)
                             .map((vessel) => (
                                 <li key={vessel.id}>
                                     {vessel.name} - {vessel.mmsi}
