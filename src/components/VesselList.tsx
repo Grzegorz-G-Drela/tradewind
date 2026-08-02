@@ -5,6 +5,7 @@ interface Vessel {
     mmsi: string;
     name: string | null;
     imo: string | null;
+    flag: string | null;
 }
 
 function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFlag }: {
@@ -20,12 +21,20 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
     const [region, setRegion] = useState('english-channel');
 
     useEffect(() => {
-        fetch('/api/vessels')
-            .then(res => res.json())
-            .then(data => {
-                setVessels(data);
-                setLoading(false);
-            });
+        function loadVessels() {
+            fetch('/api/vessels')
+                .then(res => res.json())
+                .then(data => {
+                    setVessels(data);
+                    setLoading(false);
+                });
+        }
+
+        loadVessels();
+
+        const intervalId = setInterval(loadVessels, 3000);
+
+        return () => clearInterval(intervalId);
     }, []);
 
     const sorted = [...vessels].sort((a, b) => {

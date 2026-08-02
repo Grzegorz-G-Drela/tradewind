@@ -2,8 +2,9 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import vesselsRouter from './routes/vessels.js';
-import portsRouter from './routes/ports.js'
+import portsRouter from './routes/ports.js';
 import tradeFlowsRoutes from './routes/tradeFlows.js';
+import './adapters/aisstream.js';
 
 const app = express();
 app.use(cors());
