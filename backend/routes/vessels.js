@@ -1,6 +1,6 @@
 import express from 'express';
 import { db } from '../db.js';
-import { vessels } from '../schema.js'
+import { vessels } from '../schema.js';
 
 const router = express.Router()
 
