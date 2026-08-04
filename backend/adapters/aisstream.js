@@ -137,5 +137,6 @@ function connectAIS(boundingBox) {
     }
 }
 
-
 connectAIS([[48.0, -5.0], [52.0, 5.0]]);
+
+export { connectAIS };
