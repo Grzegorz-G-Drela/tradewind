@@ -12,6 +12,9 @@ dotenv.config({ path: new URL('../.env', import.meta.url).pathname });
 
 // end of imports
 
+let ws;
+let currentRegion;
+
 const USE_MOCK = process.env.USE_MOCK === 'true';
 
 const mockMessages = USE_MOCK
@@ -31,14 +34,16 @@ async function findOrCreateVessel(mmsi) {
     await db.insert(vessels).values({
         mmsi: String(mmsi),
         flag: getFlagFromMmsi(mmsi),
+        region: currentRegion,
     });
     const created = await db.select().from(vessels).where(eq(vessels.mmsi, String(mmsi)));
     return created[0].id;
 }
 
-let ws;
+function connectAIS(boundingBox, region) {
+    currentRegion = region;
+    if (ws) ws.close();
 
-function connectAIS(boundingBox) {
     if (!USE_MOCK) {
         ws = new WebSocket('wss://stream.aisstream.io/v0/stream');
 
@@ -137,6 +142,6 @@ function connectAIS(boundingBox) {
     }
 }
 
-connectAIS([[48.0, -5.0], [52.0, 5.0]]);
+connectAIS([[48.0, -5.0], [52.0, 5.0]], 'english-channel');
 
 export { connectAIS };

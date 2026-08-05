@@ -10,6 +10,7 @@ const vessels = pgTable('vessels', {
     flag: varchar('flag', { length: 50 }),
     length: integer('length'),
     width: integer('width'),
+    region: varchar('region', {length: 20}),
 });
 
 const vessel_positions = pgTable('vessel_positions', {

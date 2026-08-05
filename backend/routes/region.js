@@ -12,7 +12,7 @@ router.post('/', (req, res) => {
         return res.status(400).json({ error: 'Unknown region'});
     }
 
-    connectAIS(regionData.boundingBox);
+    connectAIS(regionData.boundingBox, region);
     res.json({ success: true });
 });
 
