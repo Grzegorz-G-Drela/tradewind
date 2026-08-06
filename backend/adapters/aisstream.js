@@ -40,8 +40,8 @@ async function findOrCreateVessel(mmsi) {
     return created[0].id;
 }
 
-function connectAIS(boundingBox, region) {
-    currentRegion = region;
+function connectAIS(boundingBox, regionName) {
+    currentRegion = regionName;
     if (ws) ws.close();
 
     if (!USE_MOCK) {

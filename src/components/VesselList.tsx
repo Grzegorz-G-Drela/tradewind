@@ -22,20 +22,28 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
 
     useEffect(() => {
         function loadVessels() {
-            fetch('/api/vessels')
+            fetch(`/api/vessels?region=${region}`)
                 .then(res => res.json())
                 .then(data => {
                     setVessels(data);
                     setLoading(false);
                 });
         }
-
         loadVessels();
-
         const intervalId = setInterval(loadVessels, 3000);
-
         return () => clearInterval(intervalId);
-    }, []);
+    }, [region]);
+
+    async function handleRegionChange(e: React.ChangeEvent<HTMLSelectElement>) {
+        const newRegion = e.target.value;
+        setRegion(newRegion);
+
+        await fetch('/api/region', {
+            method: 'POST',
+            headers: { 'Content-type': 'application/json'},
+            body: JSON.stringify({ region: newRegion }),
+        });
+    }
 
     const sorted = [...vessels].sort((a, b) => {
         let result: number;
@@ -51,7 +59,7 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
 
     return (
         <div>
-            <select value={region} onChange={(e) => setRegion(e.target.value)}>
+            <select value={region} onChange={handleRegionChange}>
                 <option value={"english-channel"}>English Channel</option>
                 <option value={"malacca"}>Singapore / Malacca Strait</option>
                 <option value={"hormuz"}>Strait of Hormuz</option>
