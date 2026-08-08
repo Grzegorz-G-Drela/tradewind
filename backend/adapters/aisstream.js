@@ -28,6 +28,9 @@ async function findOrCreateVessel(mmsi) {
     const existing = await db.select().from(vessels).where(eq(vessels.mmsi, String(mmsi)));
 
     if (existing.length > 0) {
+        await db.update(vessels)
+            .set({ region: currentRegion })
+            .where(eq(vessels.mmsi, String(mmsi)));
         return existing[0].id;
     }
 
