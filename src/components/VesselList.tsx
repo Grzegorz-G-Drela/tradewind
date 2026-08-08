@@ -63,6 +63,7 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
                 <option value={"english-channel"}>English Channel</option>
                 <option value={"malacca"}>Singapore / Malacca Strait</option>
                 <option value={"hormuz"}>Strait of Hormuz</option>
+                <option value={"hormuz-wide"}>Strait of Hormuz WIDE</option>
                 <option value={"suez"}>Suez Canal</option>
                 <option value={"dover"}>Dover Strait</option>
             </select>

@@ -11,6 +11,10 @@ export const REGIONS = {
         name: 'Strait of Hormuz',
         boundingBox: [[25.0, 54.0], [27.5, 57.0]],
     },
+    'hormuz-wide': {
+        name: 'Strait of Hormuz WIDE',
+        boundingBox: [[22.0, 53.0], [27.5, 61.0]],
+    },
     'suez': {
         name: 'Suez Canal',
         boundingBox: [[29.5, 32.0], [51.2, 2.0]],
