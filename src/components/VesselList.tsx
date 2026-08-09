@@ -58,7 +58,7 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
     });
 
     return (
-        <div className="p-4 space-y-4">
+        <div className="space-y-4">
             <select
                 value={region}
                 onChange={handleRegionChange}
