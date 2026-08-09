@@ -40,7 +40,7 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
 
         await fetch('/api/region', {
             method: 'POST',
-            headers: { 'Content-type': 'application/json'},
+            headers: { 'Content-type': 'application/json' },
             body: JSON.stringify({ region: newRegion }),
         });
     }
@@ -58,8 +58,12 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
     });
 
     return (
-        <div>
-            <select value={region} onChange={handleRegionChange}>
+        <div className="p-4 space-y-4">
+            <select
+                value={region}
+                onChange={handleRegionChange}
+                className="border border-gray-300 rounded p-2"
+            >
                 <option value={"english-channel"}>English Channel</option>
                 <option value={"malacca"}>Singapore / Malacca Strait</option>
                 <option value={"hormuz"}>Strait of Hormuz</option>
@@ -68,18 +72,21 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
                 <option value={"dover"}>Dover Strait</option>
             </select>
             {loading ? (
-                <p>Loading vessels...</p>
+                <p className="text-gray-500">Loading vessels...</p>
             ) : (
                 <>
-                    <p>Vessel count : {vessels.length}</p>
-                    <ul>
+                    <p className="text-gray-600 font-medium">Vessel count : {vessels.length}</p>
+                    <ul className="space-y-2">
                         {sorted
                             .filter((vessel) => vessel.mmsi.includes(searchTerm))
                             .filter((vessel) => !nameOnly || vessel.name !== null)
                             .filter((vessel) => !imoOnly || vessel.imo !== null)
                             .filter((vessel) => !hasFlag || vessel.flag !== null)
                             .map((vessel) => (
-                                <li key={vessel.id}>
+                                <li
+                                    key={vessel.id}
+                                    className="p-2 border border-gray-200 rounded"
+                                >
                                     {vessel.name} - {vessel.mmsi}
                                 </li>
                             ))}

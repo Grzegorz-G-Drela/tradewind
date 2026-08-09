@@ -14,50 +14,61 @@ function Home() {
     }
 
     return (
-        <div>
-            <h1>Home</h1>
+        <div className="p-4 max-w-2xl mx-auto space-y-4">
+            <h1 className="text-2xl font-bold">Home</h1>
 
             <input
                 type="text"
                 placeholder="Search by MMSI"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                className="border border-gray-300 rounded p-2"
             />
 
-            <button onClick={() => setSortField(sortField === 'name' ? 'mmsi' : 'name')}>
-                Sort by: {sortField}
-            </button>
+            <div className="flex gap-2">
+                <button
+                    onClick={() => setSortField(sortField === 'name' ? 'mmsi' : 'name')}
+                    className="border border-gray-300 rounded px-3 py-2"
+                >
+                    Sort by: {sortField}
+                </button>
 
-            <button onClick={toggleSort}>
-                Sort: {sortOrder === 'asc' ? 'A-Z' : 'Z-A'}
-            </button>
+                <button
+                    onClick={toggleSort}
+                    className="border border-gray-300 rounded px-3 py-2"
+                >
+                    Sort: {sortOrder === 'asc' ? 'A-Z' : 'Z-A'}
+                </button>
+            </div>
 
-            <label>
-                <input
-                    type="checkbox"
-                    checked={nameOnly}
-                    onChange={(e) => setNameOnly(e.target.checked)}
-                />
-                Has name only
-            </label>
+            <div className="flex gap-4">
+                <label className="flex items-center gap-1">
+                    <input
+                        type="checkbox"
+                        checked={nameOnly}
+                        onChange={(e) => setNameOnly(e.target.checked)}
+                    />
+                    Has name only
+                </label>
 
-            <label>
-                <input
-                    type="checkbox"
-                    checked={imoOnly}
-                    onChange={(e) => setImoOnly(e.target.checked)}
-                />
-                Has IMO only
-            </label>
+                <label className="flex items-center gap-1">
+                    <input
+                        type="checkbox"
+                        checked={imoOnly}
+                        onChange={(e) => setImoOnly(e.target.checked)}
+                    />
+                    Has IMO only
+                </label>
 
-            <label>
-                <input
-                    type='checkbox'
-                    checked={hasFlag}
-                    onChange={(e) => setHasFlag(e.target.checked)}
-                />
-                Has Flag
-            </label>
+                <label className="flex items-center gap-1">
+                    <input
+                        type='checkbox'
+                        checked={hasFlag}
+                        onChange={(e) => setHasFlag(e.target.checked)}
+                    />
+                    Has Flag
+                </label>
+            </div>
 
             <VesselList
                 sortField={sortField}
