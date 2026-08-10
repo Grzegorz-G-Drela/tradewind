@@ -19,6 +19,7 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
     const [vessels, setVessels] = useState<Vessel[]>([]);
     const [loading, setLoading] = useState(true);
     const [region, setRegion] = useState('english-channel');
+    const [lastUpdated, setLastUpdated] = useState(null);
 
     useEffect(() => {
         function loadVessels() {
@@ -33,6 +34,12 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
         const intervalId = setInterval(loadVessels, 3000);
         return () => clearInterval(intervalId);
     }, [region]);
+
+    useEffect(() => {
+        fetch('http://localhost:3000/api/vessels/last-updated')
+        .then(res => res.json())
+        .then(data => setLastUpdated(data.lastSeen));
+    }, []);
 
     async function handleRegionChange(e: React.ChangeEvent<HTMLSelectElement>) {
         const newRegion = e.target.value;
@@ -71,6 +78,7 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
                 <option value={"suez"}>Suez Canal</option>
                 <option value={"dover"}>Dover Strait</option>
             </select>
+            <p>Last Updated: {lastUpdated}</p>
             {loading ? (
                 <p className="text-gray-500">Loading vessels...</p>
             ) : (
