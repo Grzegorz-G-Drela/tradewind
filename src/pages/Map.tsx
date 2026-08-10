@@ -1,7 +1,7 @@
 function Map() {
     return (
-        <div>
-            <h1>Map</h1>
+        <div className="p-4 max-w-2xl mx-auto space-y-4">
+            <h1 className="text-2xl font-bold">Map</h1>
         </div>
     )
 }
