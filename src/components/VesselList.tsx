@@ -7,6 +7,26 @@ interface Vessel {
     imo: string | null;
     flag: string | null;
 }
+function formatTimeStamop(isoString: string): string {
+    const timestamp = new Date(isoString);
+    const diffMs = Date.now() - timestamp.getTime();
+    const minutes = Math.floor(diffMs / 60000);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    let relative: string;
+    if (minutes < 1) relative = 'just now';
+    else if (minutes < 60) relative = `${minutes} min ago`;
+    else if (hours < 24) relative = `${hours} hr ago`;
+    else relative = `${days} ${days === 1 ? 'day' : 'days'} ago`;
+
+    const datePart = timestamp.toLocaleDateString('en-CA');
+    const timePart = timestamp
+        .toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+        .replace(' ', '');
+
+    return `(${relative}) ${datePart} at ${timePart}`;
+}
 
 function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFlag }: {
     searchTerm: string;
@@ -37,8 +57,8 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
 
     useEffect(() => {
         fetch('http://localhost:3000/api/vessels/last-updated')
-        .then(res => res.json())
-        .then(data => setLastUpdated(data.lastSeen));
+            .then(res => res.json())
+            .then(data => setLastUpdated(data.lastSeen));
     }, []);
 
     async function handleRegionChange(e: React.ChangeEvent<HTMLSelectElement>) {
