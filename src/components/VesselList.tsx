@@ -7,7 +7,8 @@ interface Vessel {
     imo: string | null;
     flag: string | null;
 }
-function formatTimeStamop(isoString: string): string {
+
+function formatTimeStamp(isoString: string): string {
     const timestamp = new Date(isoString);
     const diffMs = Date.now() - timestamp.getTime();
     const minutes = Math.floor(diffMs / 60000);
@@ -98,7 +99,7 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
                 <option value={"suez"}>Suez Canal</option>
                 <option value={"dover"}>Dover Strait</option>
             </select>
-            <p>Last Updated: {lastUpdated}</p>
+            <p>Last Updated: {lastUpdated === null ? "No timestamp yet" : formatTimeStamp(lastUpdated)}</p>
             {loading ? (
                 <p className="text-gray-500">Loading vessels...</p>
             ) : (
