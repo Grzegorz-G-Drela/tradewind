@@ -1,15 +1,24 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
-
-const vessels = [
-    { name: 'shit1', lat: 45.0, lng: 23.9 },
-    { name: 'shit2', lat: 42.7, lng: 23.7 },
-];
+type Vessel = {
+    name: string,
+    lat: number,
+    lng: number,
+}
 
 function VesselsMap() {
     const mapContainer = useRef<HTMLDivElement>(null);
+    const [vessels, setVessels] = useState<Vessel[]>([]);
+
+    useEffect(() => {
+        fetch('/api/vessels')
+            .then(res => res.json())
+            .then(data => {
+                setVessels(data);
+            });
+    }, [vessels]);
 
     useEffect(() => {
         const map = new maplibregl.Map({
@@ -18,7 +27,6 @@ function VesselsMap() {
             center: [23.9, 45.0],
             zoom: 4,
         });
-
 
         vessels.forEach((vessel) => {
             const customMarker = document.createElement("div");
