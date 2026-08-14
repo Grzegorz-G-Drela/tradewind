@@ -12,13 +12,15 @@ function VesselsMap() {
     const mapContainer = useRef<HTMLDivElement>(null);
     const [vessels, setVessels] = useState<Vessel[]>([]);
 
+    let region = 'english-channel';
+    
     useEffect(() => {
-        fetch('/api/vessels')
+        fetch(`/api/vessels?region=${region}`)
             .then(res => res.json())
             .then(data => {
                 setVessels(data);
             });
-    }, [vessels]);
+    }, []);
 
     useEffect(() => {
         const map = new maplibregl.Map({

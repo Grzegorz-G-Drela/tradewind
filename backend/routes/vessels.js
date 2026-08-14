@@ -9,8 +9,14 @@ router.get('/', async (req, res) => {
     try {
         const region = req.query.region;
         const allVessels = await db
-            .select()
+            .select({
+                name: vessels.name,
+                mmsi: vessels.mmsi,
+                lat: vessel_positions.lat,
+                lng: vessel_positions.lon,
+            })
             .from(vessels)
+            .innerJoin(vessel_positions, eq(vessels.id, vessel_positions.vessel_id))
             .where(eq(vessels.region, String(region)));
         res.json(allVessels);
     } catch (error) {
