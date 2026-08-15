@@ -4,6 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 
 type Vessel = {
     name: string,
+    mmsi: string,
     lat: number,
     lng: number,
 }
@@ -26,15 +27,15 @@ function VesselsMap() {
         const map = new maplibregl.Map({
             container: mapContainer.current!,
             style: 'https://tiles.openfreemap.org/styles/liberty',
-            center: [23.9, 45.0],
-            zoom: 4,
+            center: [0.0, 50.0],
+            zoom: 4.5,
         });
 
         vessels.forEach((vessel) => {
             const customMarker = document.createElement("div");
             customMarker.style.backgroundColor = 'red';
-            customMarker.style.width = '14px';
-            customMarker.style.height = '14px';
+            customMarker.style.width = '4px';
+            customMarker.style.height = '4px';
             customMarker.style.borderRadius = '50%';
 
             new maplibregl.Marker({ element: customMarker })
@@ -44,7 +45,7 @@ function VesselsMap() {
         });
 
         return () => map.remove();
-    }, []);
+    }, [vessels]);
 
     return <div ref={mapContainer} style={{ width: '100%', height: '500px' }} />;
 }

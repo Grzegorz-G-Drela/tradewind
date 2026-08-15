@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
     try {
         const region = req.query.region;
         const allVessels = await db
-            .select({
+            .selectDistinctOn([vessels.id], {
                 name: vessels.name,
                 mmsi: vessels.mmsi,
                 lat: vessel_positions.lat,
@@ -17,7 +17,8 @@ router.get('/', async (req, res) => {
             })
             .from(vessels)
             .innerJoin(vessel_positions, eq(vessels.id, vessel_positions.vessel_id))
-            .where(eq(vessels.region, String(region)));
+            .where(eq(vessels.region, String(region)))
+            .orderBy(vessels.id, desc(vessel_positions.timestamp));
         res.json(allVessels);
     } catch (error) {
         console.error('Error fetching vessels:', error.message);
