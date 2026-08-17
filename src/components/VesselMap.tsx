@@ -14,13 +14,17 @@ function VesselsMap() {
     const [vessels, setVessels] = useState<Vessel[]>([]);
 
     let region = 'english-channel';
-    
+
     useEffect(() => {
-        fetch(`/api/vessels?region=${region}`)
-            .then(res => res.json())
-            .then(data => {
-                setVessels(data);
-            });
+        function loadVessels() {
+            fetch(`/api/vessels?region=${region}`)
+                .then(res => res.json())
+                .then(data => {
+                    setVessels(data);
+                });
+        }
+        const intervalId = setInterval(loadVessels, 3000);
+        return () => clearInterval(intervalId);
     }, []);
 
     useEffect(() => {

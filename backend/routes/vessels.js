@@ -1,9 +1,12 @@
 import express from 'express';
 import { db } from '../db.js';
 import { vessel_positions, vessels } from '../schema.js';
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, and, gte } from 'drizzle-orm';
 
-const router = express.Router()
+const router = express.Router();
+
+// cutoff - time limit
+const cutoff = new Date(Date.now() - 10 * 60 * 1000); // 10 minutes cutoff
 
 router.get('/', async (req, res) => {
     try {
@@ -17,7 +20,10 @@ router.get('/', async (req, res) => {
             })
             .from(vessels)
             .innerJoin(vessel_positions, eq(vessels.id, vessel_positions.vessel_id))
-            .where(eq(vessels.region, String(region)))
+            .where(and( // combine 2 conditions together
+                eq(vessels.region, String(region)), // equals
+                gte(vessel_positions.timestamp, cutoff) // gte - greater than or equal to
+            ))
             .orderBy(vessels.id, desc(vessel_positions.timestamp));
         res.json(allVessels);
     } catch (error) {
