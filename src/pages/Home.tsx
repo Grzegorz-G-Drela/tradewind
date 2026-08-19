@@ -1,5 +1,6 @@
 import { useState } from "react";
 import VesselList from "../components/VesselList";
+import VesselMap from "../components/VesselMap";
 
 function Home() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -70,14 +71,20 @@ function Home() {
                 </label>
             </div>
 
-            <VesselList
-                sortField={sortField}
-                searchTerm={searchTerm}
-                sortOrder={sortOrder}
-                nameOnly={nameOnly}
-                imoOnly={imoOnly}
-                hasFlag={hasFlag}
-            />
+            <div>
+                <VesselList
+                    sortField={sortField}
+                    searchTerm={searchTerm}
+                    sortOrder={sortOrder}
+                    nameOnly={nameOnly}
+                    imoOnly={imoOnly}
+                    hasFlag={hasFlag}
+                />
+
+                <VesselMap
+                    
+                />
+            </div>
         </div>
     );
 }
