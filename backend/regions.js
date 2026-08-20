@@ -17,7 +17,7 @@ export const REGIONS = {
     },
     'suez': {
         name: 'Suez Canal',
-        boundingBox: [[29.5, 32.0], [51.2, 2.0]],
+        boundingBox: [[29.5, 32.0], [2.0, 51.2]],
     },
     'dover': {
         name: 'Dover Strait',
