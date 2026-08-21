@@ -10,8 +10,10 @@ type Vessel = {
 }
 
 function VesselsMap() {
-    const mapContainer = useRef<HTMLDivElement>(null);
     const [vessels, setVessels] = useState<Vessel[]>([]);
+    const mapContainer = useRef<HTMLDivElement>(null);
+    const map = useRef<maplibregl.Map | null>(null);
+    const markers = useRef<maplibregl.Marker[]>([]);
 
     let region = 'english-channel';
 
@@ -28,12 +30,17 @@ function VesselsMap() {
     }, []);
 
     useEffect(() => {
-        const map = new maplibregl.Map({
+        map.current = new maplibregl.Map({
             container: mapContainer.current!,
             style: 'https://tiles.openfreemap.org/styles/liberty',
             center: [0.0, 50.0],
             zoom: 4.5,
         });
+    }, []);
+
+    useEffect(() => {
+        markers.current.forEach(m => m.remove());
+        markers.current = [];
 
         vessels.forEach((vessel) => {
             const customMarker = document.createElement("div");
@@ -42,13 +49,13 @@ function VesselsMap() {
             customMarker.style.height = '4px';
             customMarker.style.borderRadius = '50%';
 
-            new maplibregl.Marker({ element: customMarker })
+            const newMarker = new maplibregl.Marker({ element: customMarker })
                 .setLngLat([vessel.lng, vessel.lat])
                 .setPopup(new maplibregl.Popup().setText(vessel.name))
-                .addTo(map);
-        });
+                .addTo(map.current!);
 
-        return () => map.remove();
+            markers.current.push(newMarker);
+        });
     }, [vessels]);
 
     return <div ref={mapContainer} style={{ width: '100%', height: '500px' }} />;

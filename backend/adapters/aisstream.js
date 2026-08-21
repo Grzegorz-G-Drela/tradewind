@@ -90,7 +90,9 @@ function connectAIS(boundingBox, regionName) {
                 lon: positionData.longitude,
                 speed: positionData.sog,
                 heading: Math.round(positionData.cog),
-                timestamp: new Date(positionData.timestamp),
+                timestamp: USE_MOCK ?
+                    new Date() :
+                    new Date(positionData.timestamp),
             });
 
             console.log(`Saved position for MMSI ${positionData.mmsi}`);

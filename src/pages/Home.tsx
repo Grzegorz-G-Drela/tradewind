@@ -71,18 +71,20 @@ function Home() {
                 </label>
             </div>
 
-            <div>
-                <VesselList
-                    sortField={sortField}
-                    searchTerm={searchTerm}
-                    sortOrder={sortOrder}
-                    nameOnly={nameOnly}
-                    imoOnly={imoOnly}
-                    hasFlag={hasFlag}
-                />
+            <div className="flex gap-4">
+                <div className="w-1/3">
+                    <VesselList
+                        sortField={sortField}
+                        searchTerm={searchTerm}
+                        sortOrder={sortOrder}
+                        nameOnly={nameOnly}
+                        imoOnly={imoOnly}
+                        hasFlag={hasFlag}
+                    />
+                </div>
 
                 <VesselMap
-                    
+
                 />
             </div>
         </div>
