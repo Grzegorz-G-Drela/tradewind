@@ -15,7 +15,7 @@ function Home() {
     }
 
     return (
-        <div className="p-4 max-w-2xl mx-auto space-y-4">
+        <div className="p-4 max-w-8xl mx-auto space-y-4">
             <h1 className="text-2xl font-bold">Home</h1>
 
             <input
@@ -72,7 +72,7 @@ function Home() {
             </div>
 
             <div className="flex gap-4">
-                <div className="w-1/3">
+                <div className="w-1/3 max-w-100">
                     <VesselList
                         sortField={sortField}
                         searchTerm={searchTerm}
@@ -82,10 +82,11 @@ function Home() {
                         hasFlag={hasFlag}
                     />
                 </div>
-
-                <VesselMap
-
-                />
+                <div className="w-2/3 max-w-7xl">
+                    <VesselMap
+                    
+                    />
+                </div>
             </div>
         </div>
     );

@@ -34,7 +34,7 @@ function VesselsMap() {
             container: mapContainer.current!,
             style: 'https://tiles.openfreemap.org/styles/liberty',
             center: [0.0, 50.0],
-            zoom: 4.5,
+            zoom: 4,
         });
     }, []);
 
