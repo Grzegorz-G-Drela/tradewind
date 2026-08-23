@@ -5,11 +5,11 @@ import { desc, eq, and, gte } from 'drizzle-orm';
 
 const router = express.Router();
 
-// cutoff - time limit
-const cutoff = new Date(Date.now() - 10 * 60 * 1000); // 10 minutes cutoff
 
 router.get('/', async (req, res) => {
     try {
+        // cutoff - time limit
+        const cutoff = new Date(Date.now() - 10 * 60 * 1000); // 10 minutes cutoff
         const region = req.query.region;
         const allVessels = await db
             .selectDistinctOn([vessels.id], {
