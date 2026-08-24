@@ -14,14 +14,6 @@ function Layout() {
                     Home
                 </NavLink>
                 <NavLink
-                to='/map'
-                className={({ isActive }) =>
-                `p-2 rounded ${isActive ? 'bg-gray-200 font-medium' : 'text-gray-600'}`
-                }
-                >
-                    Map
-                </NavLink>
-                <NavLink
                 to='/trade'
                 className={({ isActive }) =>
                 `p-2 rounded ${isActive ? 'bg-gray-200 font-medium' : 'text-gray-600'}`

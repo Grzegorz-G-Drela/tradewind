@@ -92,11 +92,7 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
 
     return (
         <div className="space-y-4">
-            <select
-                value={region}
-                onChange={handleRegionChange}
-                className="border border-gray-300 rounded p-2"
-            >
+            <select value={region} onChange={handleRegionChange} className="border border-gray-300 rounded p-2">
                 <option value={"english-channel"}>English Channel</option>
                 <option value={"malacca"}>Singapore / Malacca Strait</option>
                 <option value={"hormuz"}>Strait of Hormuz</option>
@@ -104,16 +100,20 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
                 <option value={"suez"}>Suez Canal</option>
                 <option value={"dover"}>Dover Strait</option>
             </select>
-            <p>Last Updated: {lastUpdated === null ? "No timestamp yet" : formatTimeStamp(lastUpdated)}</p>
+
+            <p className="font-xl text-xs">
+                Last Updated: {lastUpdated === null ? "No timestamp yet" : formatTimeStamp(lastUpdated)}
+            </p>
+
             {loading ? (
-                <p className="text-gray-500">Loading vessels...</p>
+                <p className="text-gray-500 text-small">Loading vessels...</p>
             ) : (
                 <>
-                    <p className="text-gray-600 font-medium">Vessel count : {vessels.length}</p>
+                    <p className="text-gray-600 font-bold">VESSEL COUNT : {vessels.length}</p>
                     <ul className="space-y-2">
                         {sorted
                             .filter((vessel) => vessel.mmsi.includes(searchTerm))
-                            .filter((vessel) => !nameOnly || vessel.name !== null)
+                            .filter((vessel) => !nameOnly || (vessel.name !== null && vessel.name!==""))
                             .filter((vessel) => !imoOnly || vessel.imo !== null)
                             .filter((vessel) => !hasFlag || vessel.flag !== null)
                             .map((vessel) => (

@@ -1,6 +1,8 @@
-import { useState } from "react";
 import VesselList from "../components/VesselList";
 import VesselMap from "../components/VesselMap";
+import VesselControls from "../components/VesselControls";
+import { useState } from "react";
+
 
 function Home() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -10,81 +12,41 @@ function Home() {
     const [imoOnly, setImoOnly] = useState<boolean>(false);
     const [hasFlag, setHasFlag] = useState(false);
 
-    function toggleSort() {
-        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    }
-
     return (
-        <div className="p-4 max-w-8xl mx-auto space-y-4">
-            <h1 className="text-2xl font-bold">Home</h1>
+        <div className="h-screen">
+            <div className="flex h-screen max-w-8xl space-y-4">
+                <div className="p-4 w-1/3 max-w-120">
+                    <h1 className="pb-4 text-2xl font-bold">Home</h1>
+                    <div className="h-screen gap-4">
+                        <VesselControls
+                            sortField={sortField}
+                            searchTerm={searchTerm}
+                            sortOrder={sortOrder}
+                            nameOnly={nameOnly}
+                            imoOnly={imoOnly}
+                            hasFlag={hasFlag}
 
-            <input
-                type="text"
-                placeholder="Search by MMSI"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="border border-gray-300 rounded p-2"
-            />
-
-            <div className="flex gap-2">
-                <button
-                    onClick={() => setSortField(sortField === 'name' ? 'mmsi' : 'name')}
-                    className="border border-gray-300 rounded px-3 py-2"
-                >
-                    Sort by: {sortField}
-                </button>
-
-                <button
-                    onClick={toggleSort}
-                    className="border border-gray-300 rounded px-3 py-2"
-                >
-                    Sort: {sortOrder === 'asc' ? 'A-Z' : 'Z-A'}
-                </button>
-            </div>
-
-            <div className="flex gap-4">
-                <label className="flex items-center gap-1">
-                    <input
-                        type="checkbox"
-                        checked={nameOnly}
-                        onChange={(e) => setNameOnly(e.target.checked)}
-                    />
-                    Has name only
-                </label>
-
-                <label className="flex items-center gap-1">
-                    <input
-                        type="checkbox"
-                        checked={imoOnly}
-                        onChange={(e) => setImoOnly(e.target.checked)}
-                    />
-                    Has IMO only
-                </label>
-
-                <label className="flex items-center gap-1">
-                    <input
-                        type='checkbox'
-                        checked={hasFlag}
-                        onChange={(e) => setHasFlag(e.target.checked)}
-                    />
-                    Has Flag
-                </label>
-            </div>
-
-            <div className="flex gap-4">
-                <div className="w-1/3 max-w-100">
-                    <VesselList
-                        sortField={sortField}
-                        searchTerm={searchTerm}
-                        sortOrder={sortOrder}
-                        nameOnly={nameOnly}
-                        imoOnly={imoOnly}
-                        hasFlag={hasFlag}
-                    />
+                            setSearchTerm={setSearchTerm}
+                            setSortOrder={setSortOrder}
+                            setSortField={setSortField}
+                            setNameOnly={setNameOnly}
+                            setImoOnly={setImoOnly}
+                            setHasFlag={setHasFlag}
+                        />
+                        <VesselList
+                            sortField={sortField}
+                            searchTerm={searchTerm}
+                            sortOrder={sortOrder}
+                            nameOnly={nameOnly}
+                            imoOnly={imoOnly}
+                            hasFlag={hasFlag}
+                        />
+                    </div>
                 </div>
-                <div className="w-2/3 max-w-7xl">
+
+                <div className="h-screen w-2/3 max-w-80%">
                     <VesselMap
-                    
+
                     />
                 </div>
             </div>
