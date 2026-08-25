@@ -4,10 +4,8 @@ import { eq } from 'drizzle-orm';
 import WebSocket from 'ws';
 import { getFlagFromMmsi } from '../flagLookup.js';
 import mockAisMessages from '../mock-ais-messages.js';
-
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
-
 import dotenv from 'dotenv';
 dotenv.config({ path: new URL('../.env', import.meta.url).pathname });
 
@@ -21,7 +19,14 @@ const USE_MOCK = process.env.USE_MOCK === 'true';
 const lastWriteTime = new Map();
 const THROTTLE_MS = 60 * 1000;
 
-async function findOrCreateVessel(mmsi) {
+function trimmedName(rawName) {
+    if (rawName === null) return null;
+
+    const trimmed = rawName.trim();
+    return trimmed === "" ? null : trimmed;
+}
+
+async function findOrCreateVessel(name, mmsi) {
     const existing = await db.select().from(vessels).where(eq(vessels.mmsi, String(mmsi)));
 
     if (existing.length > 0) {
@@ -32,6 +37,7 @@ async function findOrCreateVessel(mmsi) {
     }
 
     await db.insert(vessels).values({
+        name: trimmedName(name),
         mmsi: String(mmsi),
         flag: getFlagFromMmsi(mmsi),
         region: currentRegion,
@@ -82,7 +88,7 @@ function connectAIS(boundingBox, regionName) {
 
             lastWriteTime.set(positionData.mmsi, now);
 
-            const vesselId = await findOrCreateVessel(positionData.mmsi);
+            const vesselId = await findOrCreateVessel(null, positionData.mmsi);
 
             await db.insert(vessel_positions).values({
                 vessel_id: vesselId,
@@ -99,7 +105,7 @@ function connectAIS(boundingBox, regionName) {
 
         } else if (aisMessage.MessageType === 'ShipStaticData') {
             const staticData = {
-                name: aisMessage.MetaData.ShipName,
+                name: trimmedName(aisMessage.MetaData.ShipName),
                 mmsi: aisMessage.MetaData.MMSI,
                 imo: aisMessage.Message.ShipStaticData.ImoNumber,
                 vessel_type: aisMessage.Message.ShipStaticData.Type,
@@ -109,7 +115,7 @@ function connectAIS(boundingBox, regionName) {
                     aisMessage.Message.ShipStaticData.Dimension.D
             };
 
-            const vesselId = await findOrCreateVessel(staticData.mmsi);
+            const vesselId = await findOrCreateVessel(staticData.name, staticData.mmsi);
             await db.update(vessels).set({
                 name: staticData.name,
                 mmsi: String(staticData.mmsi),

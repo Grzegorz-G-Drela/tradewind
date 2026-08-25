@@ -113,7 +113,7 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
                     <ul className="space-y-2">
                         {sorted
                             .filter((vessel) => vessel.mmsi.includes(searchTerm))
-                            .filter((vessel) => !nameOnly || (vessel.name !== null && vessel.name!==""))
+                            .filter((vessel) => !nameOnly || (vessel.name !== null && vessel.name.trim() !== ""))
                             .filter((vessel) => !imoOnly || vessel.imo !== null)
                             .filter((vessel) => !hasFlag || vessel.flag !== null)
                             .map((vessel) => (
@@ -121,7 +121,7 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
                                     key={vessel.id}
                                     className="p-2 border border-gray-200 rounded"
                                 >
-                                    {vessel.name} - {vessel.mmsi}
+                                    {vessel.mmsi} - {vessel.name}
                                 </li>
                             ))}
                     </ul>
