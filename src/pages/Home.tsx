@@ -13,11 +13,12 @@ function Home() {
     const [hasFlag, setHasFlag] = useState(false);
 
     return (
-        <div className="h-screen">
-            <div className="flex h-screen max-w-8xl space-y-4">
-                <div className="p-4 w-1/3 max-w-120">
-                    <h1 className="pb-4 text-2xl font-bold">Home</h1>
-                    <div className="h-screen gap-4">
+        <div className="h-screen flex overflow-hidden">
+
+            <div className="p-4 w-1/3 max-w-120 flex overflow-hidden">
+
+                <div className="flex flex-col flex-1 gap-4 overflow-hidden">
+                    <div>
                         <VesselControls
                             sortField={sortField}
                             searchTerm={searchTerm}
@@ -33,6 +34,9 @@ function Home() {
                             setImoOnly={setImoOnly}
                             setHasFlag={setHasFlag}
                         />
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto">
                         <VesselList
                             sortField={sortField}
                             searchTerm={searchTerm}
@@ -43,13 +47,12 @@ function Home() {
                         />
                     </div>
                 </div>
-
-                <div className="h-screen w-2/3 max-w-80%">
-                    <VesselMap
-
-                    />
-                </div>
             </div>
+
+            <div className="flex-1">
+                <VesselMap/>
+            </div>
+            
         </div>
     );
 }

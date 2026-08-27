@@ -110,7 +110,7 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
             ) : (
                 <>
                     <p className="text-gray-600 font-bold">VESSEL COUNT : {vessels.length}</p>
-                    <ul className="space-y-2">
+                    <ul className="overflow-y-auto space-y-2">
                         {sorted
                             .filter((vessel) => vessel.mmsi.includes(searchTerm))
                             .filter((vessel) => !nameOnly || (vessel.name !== null && vessel.name.trim() !== ""))
