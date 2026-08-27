@@ -52,7 +52,7 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
                 });
         }
         loadVessels();
-        const intervalId = setInterval(loadVessels, 3000);
+        const intervalId = setInterval(loadVessels, 20000); //list refresh timer - 20s
         return () => clearInterval(intervalId);
     }, [region]);
 
