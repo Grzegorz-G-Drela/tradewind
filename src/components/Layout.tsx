@@ -1,25 +1,25 @@
-import { Outlet, NavLink } from "react-router-dom"
-
+import { Outlet, NavLink } from "react-router-dom";
+import { Crosshair, TrendingUp } from "lucide-react";
 
 function Layout() {
     return (
-        <div className="flex h-screen">
-            <nav className="w-48 border-r border-gray-300 p-4 flex flex-col gap-2">
-                <NavLink
-                to='/'
-                className={({ isActive }) =>
-                `p-2 rounded ${isActive ? 'bg-gray-200 font-medium' : 'text-gray-600'}`
-                }
-                >
-                    Home
+        <div>
+            <nav className="w-48  flex">
+                <NavLink to='/'
+                    className={({ isActive }) =>
+                        `p-2 rounded ${isActive ? 'bg-gray-200 font-medium' : 'text-gray-600'}`
+                    }>
+                    <button>
+                        <Crosshair size={35} />
+                    </button>
                 </NavLink>
-                <NavLink
-                to='/trade'
-                className={({ isActive }) =>
-                `p-2 rounded ${isActive ? 'bg-gray-200 font-medium' : 'text-gray-600'}`
-                }
-                >
-                    Trade
+                <NavLink to='/trade'
+                    className={({ isActive }) =>
+                        `p-2 rounded ${isActive ? 'bg-gray-200 font-medium' : 'text-gray-600'}`
+                    }>
+                    <button>
+                        <TrendingUp size={35} />
+                    </button>
                 </NavLink>
             </nav>
             <div className="flex-1">
@@ -31,4 +31,4 @@ function Layout() {
     )
 }
 
-export default Layout
+export default Layout;
