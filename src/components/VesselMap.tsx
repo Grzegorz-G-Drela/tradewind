@@ -7,6 +7,8 @@ type Vessel = {
     mmsi: string,
     lat: number,
     lng: number,
+    speed: number,
+    heading: number,
 }
 
 function VesselsMap() {
@@ -39,15 +41,32 @@ function VesselsMap() {
     }, []);
 
     useEffect(() => {
+        console.log(vessels[0]);
+        
         markers.current.forEach(m => m.remove());
         markers.current = [];
 
         vessels.forEach((vessel) => {
-            const customMarker = document.createElement("div");
-            customMarker.style.backgroundColor = 'red';
-            customMarker.style.width = '4px';
-            customMarker.style.height = '4px';
-            customMarker.style.borderRadius = '50%';
+            let customMarker;
+            const isDocking = vessel.speed < 1;
+            const vesselDirection = vessel.heading;
+
+            if (isDocking) {
+                customMarker = document.createElement("div");
+                customMarker.style.backgroundColor = 'red';
+                customMarker.style.width = '8px';
+                customMarker.style.height = '8px';
+                customMarker.style.borderRadius = '50%';
+            }
+
+            else {
+                customMarker = document.createElement("div");
+                customMarker.innerHTML = `
+                <svg width="20" height="20" style="transform: rotate(${vesselDirection}deg)">
+                    <polygon points="10,2 14,16 10,12 6,16" fill="blue" />
+                </svg>
+                `;
+            }
 
             const newMarker = new maplibregl.Marker({ element: customMarker })
                 .setLngLat([vessel.lng, vessel.lat])
@@ -55,6 +74,8 @@ function VesselsMap() {
                 .addTo(map.current!);
 
             markers.current.push(newMarker);
+
+            console.log(typeof vessel.speed);
         });
     }, [vessels]);
 
