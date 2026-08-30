@@ -17,6 +17,8 @@ router.get('/', async (req, res) => {
                 mmsi: vessels.mmsi,
                 lat: vessel_positions.lat,
                 lng: vessel_positions.lon,
+                speed: vessel_positions.speed,
+                heading: vessel_positions.heading,
             })
             .from(vessels)
             .innerJoin(vessel_positions, eq(vessels.id, vessel_positions.vessel_id))
@@ -25,7 +27,15 @@ router.get('/', async (req, res) => {
                 gte(vessel_positions.timestamp, cutoff) // gte - greater than or equal to
             ))
             .orderBy(vessels.id, desc(vessel_positions.timestamp));
-        res.json(allVessels);
+
+            const convertedVessels = allVessels.map(v => ({
+                ...v,
+                lat: Number(v.lat),
+                lng: Number(v.lng),
+                speed: Number(v.speed),
+            }));
+            
+        res.json(convertedVessels);
     } catch (error) {
         console.error('Error fetching vessels:', error.message);
         res.status(500).json({ error: 'Failed to fetch vessels' });
