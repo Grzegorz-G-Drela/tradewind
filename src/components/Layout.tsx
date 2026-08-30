@@ -3,23 +3,19 @@ import { Crosshair, TrendingUp } from "lucide-react";
 
 function Layout() {
     return (
-        <div>
-            <nav className="w-48  flex">
+        <div className="relative h-screen">
+            <nav className="bg-gray-100 gap-1 flex absolute top-4 right-4 rounded z-10">
                 <NavLink to='/'
                     className={({ isActive }) =>
-                        `p-2 rounded ${isActive ? 'bg-gray-200 font-medium' : 'text-gray-600'}`
+                        `p-2 rounded bg-gray-100 ${isActive ? 'bg-gray-200 font-medium' : 'text-gray-500'}`
                     }>
-                    <button>
                         <Crosshair size={35} />
-                    </button>
                 </NavLink>
                 <NavLink to='/trade'
                     className={({ isActive }) =>
-                        `p-2 rounded ${isActive ? 'bg-gray-200 font-medium' : 'text-gray-600'}`
+                        `p-2 rounded bg-gray-100 ${isActive ? 'bg-gray-200 font-medium' : 'text-gray-500'}`
                     }>
-                    <button>
                         <TrendingUp size={35} />
-                    </button>
                 </NavLink>
             </nav>
             <div className="flex-1">
