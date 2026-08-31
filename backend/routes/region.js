@@ -6,13 +6,13 @@ const router = express.Router();
 
 router.post('/', (req, res) => {
     const { region } = req.body;
-    const regionData = REGIONS[region];
+    const chosenRegion = REGIONS[region];
 
-    if (!regionData) {
+    if (!chosenRegion) {
         return res.status(400).json({ error: 'Unknown region'});
     }
 
-    connectAIS(regionData.boundingBox, region);
+    connectAIS(chosenRegion.boundingBox, region);
     res.json({ success: true });
 });
 
