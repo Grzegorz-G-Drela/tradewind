@@ -34,7 +34,7 @@ function VesselsMap() {
     useEffect(() => {
         map.current = new maplibregl.Map({
             container: mapContainer.current!,
-            style: 'https://tiles.openfreemap.org/styles/liberty',
+            style: 'https://tiles.openfreemap.org/styles/positron',
             center: [0.0, 50.0],
             zoom: 4,
         });
@@ -42,7 +42,7 @@ function VesselsMap() {
 
     useEffect(() => {
         console.log(vessels[0]);
-        
+
         markers.current.forEach(m => m.remove());
         markers.current = [];
 
