@@ -5,11 +5,26 @@ import WebSocket from 'ws';
 import { getFlagFromMmsi } from '../flagLookup.js';
 import mockAisMessages from '../mock-ais-messages.js';
 import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
 import dotenv from 'dotenv';
+import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+// the tool that checks "is this point inside this shape"
+import { point, polygon } from '@turf/helpers';
+// point() = turn a lat/lng into something Turf understands. polygon() = turn a list of corners into a shape
+import { REGIONS } from '../regions.js';
+// pulls in your region boxes, including the new preciseArea
+
+const require = createRequire(import.meta.url);
 dotenv.config({ path: new URL('../.env', import.meta.url).pathname });
 
 // end of imports
+
+const channelPolygon = polygon([REGIONS['english-channel'].preciseArea]);
+// takes the 13 corner points from regions.js and turns them into an actual shape Turf can check against
+
+function getRealRegion(lat, lng) {
+    const inChannel = booleanPointInPolygon(point([lng, lat]), channelPolygon);
+    return inChannel ? 'english-channel' : 'outside-region';
+}
 
 let ws;
 let currentRegion;
@@ -26,12 +41,20 @@ function trimmedName(rawName) {
     return trimmed === "" ? null : trimmed;
 }
 
-async function findOrCreateVessel(name, mmsi) {
+async function findOrCreateVessel(name, mmsi, lat, lng) {
+    let region;
+
+    if (lat !== undefined && lng !== undefined) {
+        region = getRealRegion(lat, lng);
+    } else {
+        region = 'unknown';
+    }
+
     const existing = await db.select().from(vessels).where(eq(vessels.mmsi, String(mmsi)));
 
     if (existing.length > 0) {
         await db.update(vessels)
-            .set({ region: currentRegion })
+            .set({ region })
             .where(eq(vessels.mmsi, String(mmsi)));
         return existing[0].id;
     }
@@ -40,7 +63,7 @@ async function findOrCreateVessel(name, mmsi) {
         name: trimmedName(name),
         mmsi: String(mmsi),
         flag: getFlagFromMmsi(mmsi),
-        region: currentRegion,
+        region,
     });
     const created = await db.select().from(vessels).where(eq(vessels.mmsi, String(mmsi)));
     return created[0].id;
@@ -88,7 +111,7 @@ function connectAIS(boundingBox, regionName) {
 
             lastWriteTime.set(positionData.mmsi, now);
 
-            const vesselId = await findOrCreateVessel(null, positionData.mmsi);
+            const vesselId = await findOrCreateVessel(null, positionData.mmsi, positionData.latitude, positionData.longitude);
 
             await db.insert(vessel_positions).values({
                 vessel_id: vesselId,
