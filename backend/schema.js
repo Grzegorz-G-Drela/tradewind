@@ -25,9 +25,9 @@ const vessel_positions = pgTable('vessel_positions', {
 
 const ports = pgTable('ports', {
     id: serial('id').primaryKey(),
-    locode: varchar('locode', { length: 5 }).notNull(),
-    name: varchar('name', { length: 255 }).notNull(),
-    country: varchar('country', { length: 2 }).notNull(),
+    locode: varchar('locode', { length: 5 }),
+    name: varchar('name', { length: 100 }).notNull(),
+    country: varchar('country', { length: 100 }).notNull(),
     lat: decimal('lat', { precision: 9, scale: 6 }),
     lon: decimal('lon', { precision: 9, scale: 6 })
 });
