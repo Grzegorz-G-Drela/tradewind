@@ -53,9 +53,11 @@ async function findOrCreateVessel(name, mmsi, lat, lng) {
     const existing = await db.select().from(vessels).where(eq(vessels.mmsi, String(mmsi)));
 
     if (existing.length > 0) {
-        await db.update(vessels)
-            .set({ region })
-            .where(eq(vessels.mmsi, String(mmsi)));
+        if (region !== 'unknown') {
+            await db.update(vessels)
+                .set({ region })
+                .where(eq(vessels.mmsi, String(mmsi)));
+        }
         return existing[0].id;
     }
 
