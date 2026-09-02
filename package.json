@@ -12,6 +12,7 @@
   "dependencies": {
     "@turf/boolean-point-in-polygon": "^7.4.0",
     "@turf/helpers": "^7.4.0",
+    "csv-parse": "^7.0.2",
     "lucide-react": "^1.35.0",
     "maplibre-gl": "^6.3.0",
     "node-fetch": "^3.3.2",
