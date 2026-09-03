@@ -27,7 +27,7 @@ function VesselsMap() {
     const vesselMarkers = useRef<maplibregl.Marker[]>([]);
 
     const [ports, setPorts] = useState<Port[]>([]);
-    const portMarkers = useRef([]);
+    const portMarkers = useRef<maplibregl.Marker[]>([]);
 
 
     let region = 'english-channel';
@@ -97,6 +97,26 @@ function VesselsMap() {
             console.log(typeof vessel.speed);
         });
     }, [vessels]);
+
+    useEffect(() => {
+        portMarkers.current.forEach(m => m.remove());
+        portMarkers.current = [];
+
+        ports.forEach((port) => {
+            const customMarker = document.createElement("div");
+            customMarker.style.backgroundColor = 'yellow';
+            customMarker.style.width = '8px';
+            customMarker.style.height = '8px';
+            customMarker.style.borderRadius = '50%';
+
+            const newMarker = new maplibregl.Marker({ element: customMarker })
+                .setLngLat([port.lon, port.lat])
+                .setPopup(new maplibregl.Popup().setText(port.name))
+                .addTo(map.current!);
+
+            portMarkers.current.push(newMarker);
+        });
+    }, [ports]);
 
     return <div ref={mapContainer} style={{ width: '100%', height: '100%' }} />;
 }
