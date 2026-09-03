@@ -11,11 +11,24 @@ type Vessel = {
     heading: number,
 }
 
+type Port = {
+    locode: string,
+    name: string,
+    country: string,
+    lat: number,
+    lon: number,
+}
+
 function VesselsMap() {
-    const [vessels, setVessels] = useState<Vessel[]>([]);
     const mapContainer = useRef<HTMLDivElement>(null);
     const map = useRef<maplibregl.Map | null>(null);
-    const markers = useRef<maplibregl.Marker[]>([]);
+
+    const [vessels, setVessels] = useState<Vessel[]>([]);
+    const vesselMarkers = useRef<maplibregl.Marker[]>([]);
+
+    const [ports, setPorts] = useState<Port[]>([]);
+    const portMarkers = useRef([]);
+
 
     let region = 'english-channel';
 
@@ -32,6 +45,12 @@ function VesselsMap() {
     }, []);
 
     useEffect(() => {
+        fetch('/api/ports')
+            .then(res => res.json())
+            .then(data => setPorts(data));
+    }, []);
+
+    useEffect(() => {
         map.current = new maplibregl.Map({
             container: mapContainer.current!,
             style: 'https://tiles.openfreemap.org/styles/positron',
@@ -43,8 +62,8 @@ function VesselsMap() {
     useEffect(() => {
         console.log(vessels[0]);
 
-        markers.current.forEach(m => m.remove());
-        markers.current = [];
+        vesselMarkers.current.forEach(m => m.remove());
+        vesselMarkers.current = [];
 
         vessels.forEach((vessel) => {
             let customMarker;
@@ -73,7 +92,7 @@ function VesselsMap() {
                 .setPopup(new maplibregl.Popup().setText(vessel.name))
                 .addTo(map.current!);
 
-            markers.current.push(newMarker);
+            vesselMarkers.current.push(newMarker);
 
             console.log(typeof vessel.speed);
         });
