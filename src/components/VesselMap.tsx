@@ -73,12 +73,12 @@ function VesselsMap() {
 
             if (isDocking) {
                 customMarker = document.createElement("div");
-                customMarker.style.backgroundColor = 'red';
+                customMarker.style.backgroundColor = '#c0392b';
                 customMarker.style.width = '8px';
                 customMarker.style.height = '8px';
                 customMarker.style.borderRadius = '50%';
                 customMarker.style.cursor = 'pointer';
-                customMarker.style.opacity = '0.5';
+                customMarker.style.opacity = '0.6';
 
                 outerMarker.appendChild(customMarker);
             }
@@ -87,11 +87,11 @@ function VesselsMap() {
                 customMarker = document.createElement("div");
                 customMarker.innerHTML = `
                 <svg width="20" height="20" style="transform: rotate(${vesselDirection}deg)">
-                    <polygon points="10,2 14,16 10,12 6,16" fill="blue" />
+                    <polygon points="10,2 14,16 10,12 6,16" fill="#2c5f8a" />
                 </svg>
                 `;
                 customMarker.style.cursor = 'pointer';
-                customMarker.style.opacity = '0.5';
+                customMarker.style.opacity = '0.6';
 
                 outerMarker.appendChild(customMarker);
             }
@@ -115,7 +115,7 @@ function VesselsMap() {
             const outerMarker = document. createElement("div");
             
             const customMarker = document.createElement("div");
-            customMarker.style.backgroundColor = '#d4a017';
+            customMarker.style.backgroundColor = '#b8860b';
             customMarker.style.width = '6px';
             customMarker.style.height = '6px';
             customMarker.style.borderRadius = '50%';
