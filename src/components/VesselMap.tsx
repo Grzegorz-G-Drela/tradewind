@@ -69,6 +69,7 @@ function VesselsMap() {
             let customMarker;
             const isDocking = vessel.speed < 1;
             const vesselDirection = vessel.heading;
+            const outerMarker = document.createElement("div");
 
             if (isDocking) {
                 customMarker = document.createElement("div");
@@ -77,7 +78,9 @@ function VesselsMap() {
                 customMarker.style.height = '8px';
                 customMarker.style.borderRadius = '50%';
                 customMarker.style.cursor = 'pointer';
+                customMarker.style.opacity = '0.5';
 
+                outerMarker.appendChild(customMarker);
             }
 
             else {
@@ -88,10 +91,12 @@ function VesselsMap() {
                 </svg>
                 `;
                 customMarker.style.cursor = 'pointer';
+                customMarker.style.opacity = '0.5';
 
+                outerMarker.appendChild(customMarker);
             }
 
-            const newMarker = new maplibregl.Marker({ element: customMarker })
+            const newMarker = new maplibregl.Marker({ element: outerMarker })
                 .setLngLat([vessel.lng, vessel.lat])
                 .setPopup(new maplibregl.Popup().setText(vessel.name))
                 .addTo(map.current!);
@@ -107,14 +112,19 @@ function VesselsMap() {
         portMarkers.current = [];
 
         ports.forEach((port) => {
+            const outerMarker = document. createElement("div");
+            
             const customMarker = document.createElement("div");
             customMarker.style.backgroundColor = '#d4a017';
             customMarker.style.width = '6px';
             customMarker.style.height = '6px';
             customMarker.style.borderRadius = '50%';
             customMarker.style.cursor = 'pointer';
+            customMarker.style.opacity = '0.7';
 
-            const newMarker = new maplibregl.Marker({ element: customMarker })
+            outerMarker.appendChild(customMarker);
+            
+            const newMarker = new maplibregl.Marker({ element: outerMarker })
                 .setLngLat([port.lon, port.lat])
                 .setPopup(new maplibregl.Popup().setText(port.name))
                 .addTo(map.current!);
