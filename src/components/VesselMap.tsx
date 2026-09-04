@@ -76,6 +76,8 @@ function VesselsMap() {
                 customMarker.style.width = '8px';
                 customMarker.style.height = '8px';
                 customMarker.style.borderRadius = '50%';
+                customMarker.style.cursor = 'pointer';
+
             }
 
             else {
@@ -85,6 +87,8 @@ function VesselsMap() {
                     <polygon points="10,2 14,16 10,12 6,16" fill="blue" />
                 </svg>
                 `;
+                customMarker.style.cursor = 'pointer';
+
             }
 
             const newMarker = new maplibregl.Marker({ element: customMarker })
@@ -104,10 +108,11 @@ function VesselsMap() {
 
         ports.forEach((port) => {
             const customMarker = document.createElement("div");
-            customMarker.style.backgroundColor = 'yellow';
-            customMarker.style.width = '8px';
-            customMarker.style.height = '8px';
+            customMarker.style.backgroundColor = '#d4a017';
+            customMarker.style.width = '6px';
+            customMarker.style.height = '6px';
             customMarker.style.borderRadius = '50%';
+            customMarker.style.cursor = 'pointer';
 
             const newMarker = new maplibregl.Marker({ element: customMarker })
                 .setLngLat([port.lon, port.lat])
