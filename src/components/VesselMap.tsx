@@ -28,7 +28,7 @@ function VesselsMap() {
 
     const [ports, setPorts] = useState<Port[]>([]);
     const portMarkers = useRef<maplibregl.Marker[]>([]);
-
+    const zoomLevel = useRef(1);
 
     let region = 'english-channel';
 
@@ -72,10 +72,11 @@ function VesselsMap() {
             const outerMarker = document.createElement("div");
 
             if (isDocking) {
+                const size = 8 * Math.pow(1.2, zoomLevel.current / 2);
                 customMarker = document.createElement("div");
                 customMarker.style.backgroundColor = '#c0392b';
-                customMarker.style.width = '8px';
-                customMarker.style.height = '8px';
+                customMarker.style.width = `${size}px`;
+                customMarker.style.height = `${size}px`;
                 customMarker.style.borderRadius = '50%';
                 customMarker.style.cursor = 'pointer';
                 customMarker.style.opacity = '0.6';
@@ -108,12 +109,21 @@ function VesselsMap() {
     }, [vessels]);
 
     useEffect(() => {
+        if (!map.current) return;
+        const mapInstance = map.current;
+
+        mapInstance.on('zoom', () => {
+            zoomLevel.current = mapInstance.getZoom();
+        });
+    }, []);
+
+    useEffect(() => {
         portMarkers.current.forEach(m => m.remove());
         portMarkers.current = [];
 
         ports.forEach((port) => {
-            const outerMarker = document. createElement("div");
-            
+            const outerMarker = document.createElement("div");
+
             const customMarker = document.createElement("div");
             customMarker.style.backgroundColor = '#b8860b';
             customMarker.style.width = '6px';
@@ -123,7 +133,7 @@ function VesselsMap() {
             customMarker.style.opacity = '0.7';
 
             outerMarker.appendChild(customMarker);
-            
+
             const newMarker = new maplibregl.Marker({ element: outerMarker })
                 .setLngLat([port.lon, port.lat])
                 .setPopup(new maplibregl.Popup().setText(port.name))
