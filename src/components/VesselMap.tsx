@@ -28,6 +28,8 @@ function VesselsMap() {
 
     const [ports, setPorts] = useState<Port[]>([]);
     const portMarkers = useRef<maplibregl.Marker[]>([]);
+
+    const [zoomState, setZoomState] = useState(4);
     const zoomLevel = useRef(1);
 
     let region = 'english-channel';
@@ -72,7 +74,7 @@ function VesselsMap() {
             const outerMarker = document.createElement("div");
 
             if (isDocking) {
-                const size = 8 * Math.pow(1.2, zoomLevel.current / 2);
+                const size = 5 * Math.pow(1.2, zoomLevel.current / 2);
                 customMarker = document.createElement("div");
                 customMarker.style.backgroundColor = '#c0392b';
                 customMarker.style.width = `${size}px`;
@@ -85,9 +87,10 @@ function VesselsMap() {
             }
 
             else {
+                const size = 20 * Math.pow(1.2, zoomLevel.current / 2);
                 customMarker = document.createElement("div");
                 customMarker.innerHTML = `
-                <svg width="20" height="20" style="transform: rotate(${vesselDirection}deg)">
+                <svg width="${size}" height="${size}" viewBox="0 0 20 20" style="transform: rotate(${vesselDirection}deg)">
                     <polygon points="10,2 14,16 10,12 6,16" fill="#2c5f8a" />
                 </svg>
                 `;
@@ -114,6 +117,7 @@ function VesselsMap() {
 
         mapInstance.on('zoom', () => {
             zoomLevel.current = mapInstance.getZoom();
+            setZoomState(mapInstance.getZoom());
         });
     }, []);
 
@@ -122,12 +126,14 @@ function VesselsMap() {
         portMarkers.current = [];
 
         ports.forEach((port) => {
+            const size = 8 * Math.pow(1.2, zoomLevel.current / 2);
+
             const outerMarker = document.createElement("div");
 
             const customMarker = document.createElement("div");
             customMarker.style.backgroundColor = '#b8860b';
-            customMarker.style.width = '6px';
-            customMarker.style.height = '6px';
+            customMarker.style.width = `${size}px`;
+            customMarker.style.height = `${size}px`;
             customMarker.style.borderRadius = '50%';
             customMarker.style.cursor = 'pointer';
             customMarker.style.opacity = '0.7';
@@ -141,7 +147,7 @@ function VesselsMap() {
 
             portMarkers.current.push(newMarker);
         });
-    }, [ports]);
+    }, [ports, zoomState]);
 
     return <div ref={mapContainer} style={{ width: '100%', height: '100%' }} />;
 }
