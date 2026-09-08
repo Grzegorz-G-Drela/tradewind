@@ -2,6 +2,9 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import './adapters/aisstream.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // grabs the actual router built into js file
 // and gives is a variable name (vesselsRouter, portsRouter, etc.) that points at it
@@ -21,6 +24,9 @@ app.use('/api/vessels', vesselsRouter);
 app.use('/api/ports', portsRouter);
 app.use('/api/trade-flows', tradeFlowsRouter);
 app.use('/api/region', regionRouter);
+
+app.use(express.static(path.join(__dirname, '../dist')));
+app.use((req, res) => res.sendFile(path.join(__dirname, '../dist/index.html')));
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
