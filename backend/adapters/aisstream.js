@@ -42,6 +42,11 @@ function trimmedName(rawName) {
 }
 
 async function findOrCreateVessel(name, mmsi, lat, lng) {
+    if (String(mmsi).length !==9) {
+	console.log(`Skipping bad MMSI: ${mmsi}`);
+	return null;
+    }
+
     let region;
 
     if (lat !== undefined && lng !== undefined) {
@@ -114,6 +119,7 @@ function connectAIS(boundingBox, regionName) {
             lastWriteTime.set(positionData.mmsi, now);
 
             const vesselId = await findOrCreateVessel(null, positionData.mmsi, positionData.latitude, positionData.longitude);
+	    if (vesselId === null) return;
 
             await db.insert(vessel_positions).values({
                 vessel_id: vesselId,
@@ -141,7 +147,9 @@ function connectAIS(boundingBox, regionName) {
             };
 
             const vesselId = await findOrCreateVessel(staticData.name, staticData.mmsi);
-            await db.update(vessels).set({
+            if (vesselId === null) return;
+
+	    await db.update(vessels).set({
                 name: staticData.name,
                 mmsi: String(staticData.mmsi),
                 imo: String(staticData.imo),
