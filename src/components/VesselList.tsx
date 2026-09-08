@@ -58,7 +58,7 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
 
     useEffect(() => {
         function updateTimestamp() {
-            fetch('http://localhost:3000/api/vessels/last-updated')
+            fetch('/api/vessels/last-updated')
                 .then(res => res.json())
                 .then(data => setLastUpdated(data.lastSeen));
         }
