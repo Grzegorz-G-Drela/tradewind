@@ -134,12 +134,13 @@ function VesselsMap() {
             const outerMarker = document.createElement("div");
 
             const customMarker = document.createElement("div");
-            customMarker.style.backgroundColor = '#b8860b';
-            customMarker.style.width = `${size}px`;
-            customMarker.style.height = `${size}px`;
-            customMarker.style.borderRadius = '50%';
+            customMarker.style.width = '0';
+            customMarker.style.height = '0';
+            customMarker.style.borderLeft = `${size/2}px solid transparent`;
+            customMarker.style.borderRight = `${size/2}px solid transparent`;
+            customMarker.style.borderBottom = `${size*0.75}px solid black`;
             customMarker.style.cursor = 'pointer';
-            customMarker.style.opacity = '0.7';
+            customMarker.style.opacity = '0.5';
 
             outerMarker.appendChild(customMarker);
 
