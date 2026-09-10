@@ -34,7 +34,9 @@ function VesselsMap() {
 
     const [zoomState, setZoomState] = useState(4);
     const zoomLevel = useRef(1);
+
     const [mapLoaded, setMapLoaded] = useState(false);
+    const [triangleLoaded, setTriangleLoaded] = useState(false);
 
     let region = 'english-channel';
 
@@ -131,7 +133,7 @@ function VesselsMap() {
     }, []);
 
     useEffect(() => {
-        if (!map.current || !map.current.loaded()) return;
+        if (!map.current || !map.current.loaded() || !triangleLoaded) return;
 
         portMarkers.current.forEach(m => m.remove());
         portMarkers.current = [];
@@ -156,18 +158,36 @@ function VesselsMap() {
 
             map.current!.addLayer({
                 id: 'ports-layer',
-                type: 'circle',
+                type: 'symbol',
                 source: 'ports-source',
-                paint: {
-                    'circle-radius': 4,
-                    'circle-color': '#2e7d32'
+                layout: {
+                    'icon-image': 'port-triangle',
+                    'icon-size': 0.5
                 }
             });
         } else {
             const source = map.current!.getSource('ports-source') as maplibregl.GeoJSONSource;
             source.setData(portsGeoJSON);
         }
-    }, [ports, zoomState, mapLoaded]);
+    }, [ports, zoomState, mapLoaded, triangleLoaded]);
+
+    useEffect(() => {
+        if (!map.current) return;
+
+        const triangleSVG = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+            <polygon points="10,2 18,18 2,18" fill="black" opacity="0.6"/>
+        </svg>`;
+
+        const img = new Image(20, 20);
+        img.onload = () => {
+            if (!map.current!.hasImage('port-triangle')) {
+                map.current!.addImage('port-triangle', img);
+            }
+            setTriangleLoaded(true);
+        };
+        img.src = `data:image/svg+xml;base64,${btoa(triangleSVG)}`;
+    }, []);
 
     return <div ref={mapContainer} style={{ width: '100%', height: '100%' }} />;
 }
