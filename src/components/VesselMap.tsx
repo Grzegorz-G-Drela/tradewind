@@ -34,6 +34,7 @@ function VesselsMap() {
 
     const [zoomState, setZoomState] = useState(4);
     const zoomLevel = useRef(1);
+    const [mapLoaded, setMapLoaded] = useState(false);
 
     let region = 'english-channel';
 
@@ -61,6 +62,11 @@ function VesselsMap() {
             style: 'https://tiles.openfreemap.org/styles/positron',
             center: [0.0, 50.0],
             zoom: 4,
+        });
+
+        map.current.on('load', () => {
+            console.log('map is ready');
+            setMapLoaded(true);
         });
     }, []);
 
@@ -125,32 +131,43 @@ function VesselsMap() {
     }, []);
 
     useEffect(() => {
+        if (!map.current || !map.current.loaded()) return;
+
         portMarkers.current.forEach(m => m.remove());
         portMarkers.current = [];
 
-        ports.forEach((port) => {
-            const size = 8 * Math.pow(1.2, zoomLevel.current / 2);
+        const portsGeoJSON = {
+            type: 'FeatureCollection',
+            features: ports.map((port) => ({
+                type: 'Feature',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [port.lon, port.lat]
+                },
+                properties: { name: port.name }
+            }))
+        }
 
-            const outerMarker = document.createElement("div");
+        if (!map.current!.getSource('ports-source')) {
+            map.current!.addSource('ports-source', {
+                type: 'geojson',
+                data: portsGeoJSON
+            });
 
-            const customMarker = document.createElement("div");
-            customMarker.style.backgroundColor = '#b8860b';
-            customMarker.style.width = `${size}px`;
-            customMarker.style.height = `${size}px`;
-            customMarker.style.borderRadius = '50%';
-            customMarker.style.cursor = 'pointer';
-            customMarker.style.opacity = '0.7';
-
-            outerMarker.appendChild(customMarker);
-
-            const newMarker = new maplibregl.Marker({ element: outerMarker })
-                .setLngLat([port.lon, port.lat])
-                .setPopup(new maplibregl.Popup().setText(port.name))
-                .addTo(map.current!);
-
-            portMarkers.current.push(newMarker);
-        });
-    }, [ports, zoomState]);
+            map.current!.addLayer({
+                id: 'ports-layer',
+                type: 'circle',
+                source: 'ports-source',
+                paint: {
+                    'circle-radius': 4,
+                    'circle-color': '#2e7d32'
+                }
+            });
+        } else {
+            const source = map.current!.getSource('ports-source') as maplibregl.GeoJSONSource;
+            source.setData(portsGeoJSON);
+        }
+    }, [ports, zoomState, mapLoaded]);
 
     return <div ref={mapContainer} style={{ width: '100%', height: '100%' }} />;
 }
