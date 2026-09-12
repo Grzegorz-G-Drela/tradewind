@@ -22,23 +22,24 @@ type Port = {
     lon: number,
 }
 
+
 function VesselsMap() {
+
     const mapContainer = useRef<HTMLDivElement>(null);
     const map = useRef<maplibregl.Map | null>(null);
 
     const [vessels, setVessels] = useState<Vessel[]>([]);
-    const vesselMarkers = useRef<maplibregl.Marker[]>([]);
-
     const [ports, setPorts] = useState<Port[]>([]);
-    const portMarkers = useRef<maplibregl.Marker[]>([]);
 
-    const [zoomState, setZoomState] = useState(4);
     const zoomLevel = useRef(1);
-
+    const [zoomState, setZoomState] = useState(4);
     const [mapLoaded, setMapLoaded] = useState(false);
-    const [triangleLoaded, setTriangleLoaded] = useState(false);
+    const [portIconsLoaded, setPortIconsLoaded] = useState(false);
+    const [dockingVesselsLoaded, setDockingVesselsLoaded] = useState(false);
+    const [movingVesselsLoaded, setMovingVesselsLoaded] = useState(false);
 
     let region = 'english-channel';
+
 
     useEffect(() => {
         function loadVessels() {
@@ -72,55 +73,87 @@ function VesselsMap() {
         });
     }, []);
 
+
+
     useEffect(() => {
-        console.log(vessels[0]);
+        if (!map.current || !map.current.loaded() || !dockingVesselsLoaded || !movingVesselsLoaded) return;
 
-        vesselMarkers.current.forEach(m => m.remove());
-        vesselMarkers.current = [];
+        const vesselsGeoJSON = {
+            type: 'FeatureCollection',
+            features: vessels.map((vessel) => ({
+                type: 'Feature',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [vessel.lng, vessel.lat]
+                },
+                properties: {
+                    name: vessel.name,
+                    heading: vessel.heading,
+                    status: vessel.speed < 1 ? 'docking' : 'moving',
+                },
+            }))
+        };
 
-        vessels.forEach((vessel) => {
-            let customMarker;
-            const isDocking = vessel.speed < 1;
-            const vesselDirection = vessel.heading;
-            const outerMarker = document.createElement("div");
+        if (!map.current!.getSource('vessels-source')) {
+            map.current!.addSource('vessels-source', {
+                type: 'geojson',
+                data: vesselsGeoJSON
+            });
 
-            if (isDocking) {
-                const size = 5 * Math.pow(1.2, zoomLevel.current / 2);
-                customMarker = document.createElement("div");
-                customMarker.style.backgroundColor = '#c0392b';
-                customMarker.style.width = `${size}px`;
-                customMarker.style.height = `${size}px`;
-                customMarker.style.borderRadius = '50%';
-                customMarker.style.cursor = 'pointer';
-                customMarker.style.opacity = '0.6';
+            map.current!.addLayer({
+                id: 'vessels-layer',
+                type: 'symbol',
+                source: 'vessels-source',
+                layout: {
+                    'icon-image': ['match', ['get', 'status'],
+                        'docking', 'docking-icon',
+                        'moving', 'moving-icon',
+                        'moving-icon'],
+                    'icon-size': 0.5,
+                    'icon-rotate': ['get', 'heading'],
+                    'icon-rotation-alignment': 'map'
+                }
+            });
+        } else {
+            const source = map.current!.getSource('vessels-source') as maplibregl.GeoJSONSource;
+            source.setData(vesselsGeoJSON);
+        }
+    }, [vessels, mapLoaded, dockingVesselsLoaded, movingVesselsLoaded]);
 
-                outerMarker.appendChild(customMarker);
+    useEffect(() => {
+        if (!map.current) return;
+
+        const dockingSVG = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+            <circle cx="10" cy="10" r="6" fill="red" opacity="0.8"/>
+        </svg>`;
+        const img = new Image(20, 20);
+        img.onload = () => {
+            if (!map.current!.hasImage('docking-icon')) {
+                map.current!.addImage('docking-icon', img);
             }
+            setDockingVesselsLoaded(true);
+        };
+        img.src = `data:image/svg+xml;base64,${btoa(dockingSVG)}`;
+    }, []);
 
-            else {
-                const size = 20 * Math.pow(1.2, zoomLevel.current / 2);
-                customMarker = document.createElement("div");
-                customMarker.innerHTML = `
-                <svg width="${size}" height="${size}" viewBox="0 0 20 20" style="transform: rotate(${vesselDirection}deg)">
-                    <polygon points="10,2 14,16 10,12 6,16" fill="#2c5f8a" />
-                </svg>
-                `;
-                customMarker.style.cursor = 'pointer';
-                customMarker.style.opacity = '0.6';
+    useEffect(() => {
+        if (!map.current) return;
 
-                outerMarker.appendChild(customMarker);
+        const movingSVG = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+            <polygon points="10,2 16,18 10,14 4,18" fill="blue" opacity="0.8"/>
+        </svg>`;
+
+        const img = new Image(20, 20);
+        img.onload = () => {
+            if (!map.current!.hasImage('moving-icon')) {
+                map.current!.addImage('moving-icon', img);
             }
-
-            const newMarker = new maplibregl.Marker({ element: outerMarker })
-                .setLngLat([vessel.lng, vessel.lat])
-                .setPopup(new maplibregl.Popup().setText(vessel.name))
-                .addTo(map.current!);
-
-            vesselMarkers.current.push(newMarker);
-
-            console.log(typeof vessel.speed);
-        });
-    }, [vessels]);
+            setMovingVesselsLoaded(true);
+        };
+        img.src = `data:image/svg+xml;base64,${btoa(movingSVG)}`;
+    }, []);
 
     useEffect(() => {
         if (!map.current) return;
@@ -133,10 +166,7 @@ function VesselsMap() {
     }, []);
 
     useEffect(() => {
-        if (!map.current || !map.current.loaded() || !triangleLoaded) return;
-
-        portMarkers.current.forEach(m => m.remove());
-        portMarkers.current = [];
+        if (!map.current || !map.current.loaded() || !portIconsLoaded) return;
 
         const portsGeoJSON = {
             type: 'FeatureCollection',
@@ -169,7 +199,7 @@ function VesselsMap() {
             const source = map.current!.getSource('ports-source') as maplibregl.GeoJSONSource;
             source.setData(portsGeoJSON);
         }
-    }, [ports, zoomState, mapLoaded, triangleLoaded]);
+    }, [ports, zoomState, mapLoaded, portIconsLoaded]);
 
     useEffect(() => {
         if (!map.current) return;
@@ -184,7 +214,7 @@ function VesselsMap() {
             if (!map.current!.hasImage('port-triangle')) {
                 map.current!.addImage('port-triangle', img);
             }
-            setTriangleLoaded(true);
+            setPortIconsLoaded(true);
         };
         img.src = `data:image/svg+xml;base64,${btoa(triangleSVG)}`;
     }, []);
