@@ -111,7 +111,9 @@ function VesselsMap() {
                         'moving-icon'],
                     'icon-size': 0.5,
                     'icon-rotate': ['get', 'heading'],
-                    'icon-rotation-alignment': 'map'
+                    'icon-rotation-alignment': 'map',
+                    'icon-allow-overlap': true,
+                    'icon-ignore-placement': true,
                 }
             });
         } else {
