@@ -116,6 +116,17 @@ function VesselsMap() {
                     'icon-ignore-placement': true,
                 }
             });
+
+            map.current.on('mouseenter', 'vessels-layer', () => {
+                map.current!.getCanvas().style.cursor = 'pointer';
+            });
+            map.current.on('mouseleave', 'vessels-layer', () => {
+                map.current!.getCanvas().style.cursor = '';
+            });
+            map.current.on('click', 'vessels-layer', (e) => {
+                const feature = e.features![0];
+                console.log(feature.properties);
+            });
         } else {
             const source = map.current!.getSource('vessels-source') as maplibregl.GeoJSONSource;
             source.setData(vesselsGeoJSON);
@@ -199,11 +210,32 @@ function VesselsMap() {
                     'icon-ignore-placement': true,
                 }
             });
+
+            map.current.on('mouseenter', 'ports-layer', () => {
+                map.current!.getCanvas().style.cursor = 'pointer';
+            });
+            map.current.on('mouseleave', 'ports-layer', () => {
+                map.current!.getCanvas().style.cursor = '';
+            });
+            map.current.on('click', 'ports-layer', (e) => {
+                const feature = e.features![0];
+                console.log(feature.properties);
+            });
         } else {
             const source = map.current!.getSource('ports-source') as maplibregl.GeoJSONSource;
             source.setData(portsGeoJSON);
         }
     }, [ports, zoomState, mapLoaded, portIconsLoaded]);
+
+    //          map.current.on('mouseenter', 'vessels-layer', () => {
+    //             map.current!.getCanvas().style.cursor = 'pointer';
+    //         });
+    //         map.current.on('mouseleave', 'vessels-layer', () => {
+    //             map.current!.getCanvas().style.cursor = '';
+    //         });
+    //         map.current.on('click', 'vessels-layer', (e) => {
+    //             const feature = e.features![0];
+    //             console.log(feature.properties);
 
     useEffect(() => {
         if (!map.current) return;
