@@ -194,7 +194,9 @@ function VesselsMap() {
                 source: 'ports-source',
                 layout: {
                     'icon-image': 'port-triangle',
-                    'icon-size': 0.5
+                    'icon-size': 0.5,
+                    'icon-allow-overlap': true,
+                    'icon-ignore-placement': true,
                 }
             });
         } else {
