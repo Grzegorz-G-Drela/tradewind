@@ -76,7 +76,7 @@ function VesselsMap() {
 
 
     useEffect(() => {
-        if (!map.current || !map.current.loaded() || !dockingVesselsLoaded || !movingVesselsLoaded) return;
+        if (!map.current || !mapLoaded || !dockingVesselsLoaded || !movingVesselsLoaded) return;
 
         const vesselsGeoJSON = {
             type: 'FeatureCollection',
@@ -168,7 +168,7 @@ function VesselsMap() {
     }, []);
 
     useEffect(() => {
-        if (!map.current || !map.current.loaded() || !portIconsLoaded) return;
+        if (!map.current || !mapLoaded || !portIconsLoaded) return;
 
         const portsGeoJSON = {
             type: 'FeatureCollection',
