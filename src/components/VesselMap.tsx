@@ -89,6 +89,7 @@ function VesselsMap() {
                 properties: {
                     name: vessel.name,
                     heading: vessel.heading,
+                    speed: vessel.speed,
                     status: vessel.speed < 1 ? 'docking' : 'moving',
                 },
             }))
@@ -125,7 +126,14 @@ function VesselsMap() {
             });
             map.current.on('click', 'vessels-layer', (e) => {
                 const feature = e.features![0];
-                console.log(feature.properties);
+                new maplibregl.Popup()
+                    .setLngLat(feature.geometry.coordinates as [number, number])
+                    .setHTML(
+                        `<strong>${feature.properties.name}</strong>
+                        <br>Heading: ${feature.properties.heading}&deg;
+                        <br>Speed: ${feature.properties.speed} knots
+                        <br>Status: ${feature.properties.speed < 1 ? 'Stationary' : 'Moving'}`)
+                    .addTo(map.current!);
             });
         } else {
             const source = map.current!.getSource('vessels-source') as maplibregl.GeoJSONSource;
@@ -219,7 +227,10 @@ function VesselsMap() {
             });
             map.current.on('click', 'ports-layer', (e) => {
                 const feature = e.features![0];
-                console.log(feature.properties);
+                new maplibregl.Popup()
+                    .setLngLat(feature.geometry.coordinates as [number, number])
+                    .setHTML(`<strong>${feature.properties.name}</strong>`)
+                    .addTo(map.current!);
             });
         } else {
             const source = map.current!.getSource('ports-source') as maplibregl.GeoJSONSource;
@@ -227,15 +238,13 @@ function VesselsMap() {
         }
     }, [ports, zoomState, mapLoaded, portIconsLoaded]);
 
-    //          map.current.on('mouseenter', 'vessels-layer', () => {
-    //             map.current!.getCanvas().style.cursor = 'pointer';
-    //         });
-    //         map.current.on('mouseleave', 'vessels-layer', () => {
-    //             map.current!.getCanvas().style.cursor = '';
-    //         });
-    //         map.current.on('click', 'vessels-layer', (e) => {
-    //             const feature = e.features![0];
-    //             console.log(feature.properties);
+    // new maplibregl.Popup()
+    //     .setLngLat(feature.geometry.coordinates as [number, number])
+    //     .setHTML(
+    //         `<strong>${feature.properties.name}</strong>
+    //                     <br>Heading: ${feature.properties.heading}&deg;
+    //                     <br>Status: ${feature.properties.speed < 1 ? 'Stationary' : 'Moving'}`)
+    //     .addTo(map.current!);
 
     useEffect(() => {
         if (!map.current) return;
