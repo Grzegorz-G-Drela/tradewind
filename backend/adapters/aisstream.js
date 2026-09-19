@@ -163,11 +163,13 @@ function connectAIS() {
     if (!USE_MOCK) {
         ws.on('error', (err) => {
             console.error('WebSocket error:', err.message);
+            ws.close();
         });
     };
 
     ws.on('close', () => {
-        console.log('Connection closed');
+        console.log('Connection closed, reconnecting in 5s...');
+        setTimeout(connectAIS, 5000);
     });
 
     if (USE_MOCK) {

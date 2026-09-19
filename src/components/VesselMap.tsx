@@ -271,14 +271,6 @@ function VesselsMap() {
         }
     }, [ports, zoomState, mapLoaded, portIconsLoaded]);
 
-    // new maplibregl.Popup()
-    //     .setLngLat(feature.geometry.coordinates as [number, number])
-    //     .setHTML(
-    //         `<strong>${feature.properties.name}</strong>
-    //                     <br>Heading: ${feature.properties.heading}&deg;
-    //                     <br>Status: ${feature.properties.speed < 1 ? 'Stationary' : 'Moving'}`)
-    //     .addTo(map.current!);
-
     useEffect(() => {
         if (!map.current) return;
 
