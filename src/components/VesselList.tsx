@@ -118,12 +118,13 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
                             .filter((vessel) => !hasFlag || vessel.flag !== null)
                             .map((vessel) => (
                                 <li
-                                    key={vessel.id}
+                                    key={vessel.mmsi}
                                     className="p-2 border border-gray-200 rounded"
                                 >
                                     {vessel.mmsi} - {vessel.name}
                                 </li>
-                            ))}
+                            ))
+                        }
                     </ul>
                 </>
             )}
