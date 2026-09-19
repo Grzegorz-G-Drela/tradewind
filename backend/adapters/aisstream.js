@@ -7,16 +7,13 @@ import mockAisMessages from '../mock-ais-messages.js';
 import { createRequire } from 'module';
 import dotenv from 'dotenv';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
-// the tool that checks "is this point inside this shape"
 import { point, polygon } from '@turf/helpers';
 // point() = turn a lat/lng into something Turf understands. polygon() = turn a list of corners into a shape
 import { REGIONS } from '../regions.js';
-// pulls in your region boxes, including the new preciseArea
 
 const require = createRequire(import.meta.url);
 dotenv.config({ path: new URL('../.env', import.meta.url).pathname });
 
-// end of imports
 
 const channelPolygon = polygon([REGIONS['english-channel'].preciseArea]);
 // takes the 13 corner points from regions.js and turns them into an actual shape Turf can check against
@@ -27,7 +24,6 @@ function getRealRegion(lat, lng) {
 }
 
 let ws;
-let currentRegion;
 
 const USE_MOCK = process.env.USE_MOCK === 'true';
 
@@ -42,9 +38,9 @@ function trimmedName(rawName) {
 }
 
 async function findOrCreateVessel(name, mmsi, lat, lng) {
-    if (String(mmsi).length !==9) {
-	console.log(`Skipping bad MMSI: ${mmsi}`);
-	return null;
+    if (String(mmsi).length !== 9) {
+        console.log(`Skipping bad MMSI: ${mmsi}`);
+        return null;
     }
 
     let region;
@@ -76,16 +72,17 @@ async function findOrCreateVessel(name, mmsi, lat, lng) {
     return created[0].id;
 }
 
-function connectAIS(boundingBox, regionName) {
-    currentRegion = regionName;
+function connectAIS() {
     if (ws) ws.close();
+
+    const boundingBoxes = Object.values(REGIONS).map(r => r.boundingBox);
 
     if (!USE_MOCK) {
         ws = new WebSocket('wss://stream.aisstream.io/v0/stream');
         ws.on('open', () => {
             const subscriptionMessage = {
                 APIKey: process.env.AISSTREAM_API_KEY,
-                BoundingBoxes: [boundingBox],
+                BoundingBoxes: boundingBoxes,
             };
             ws.send(JSON.stringify(subscriptionMessage));
             console.log('Connected and subscribed to AIS stream');
@@ -119,7 +116,7 @@ function connectAIS(boundingBox, regionName) {
             lastWriteTime.set(positionData.mmsi, now);
 
             const vesselId = await findOrCreateVessel(null, positionData.mmsi, positionData.latitude, positionData.longitude);
-	    if (vesselId === null) return;
+            if (vesselId === null) return;
 
             await db.insert(vessel_positions).values({
                 vessel_id: vesselId,
@@ -149,7 +146,7 @@ function connectAIS(boundingBox, regionName) {
             const vesselId = await findOrCreateVessel(staticData.name, staticData.mmsi);
             if (vesselId === null) return;
 
-	    await db.update(vessels).set({
+            await db.update(vessels).set({
                 name: staticData.name,
                 mmsi: String(staticData.mmsi),
                 imo: String(staticData.imo),
@@ -158,6 +155,7 @@ function connectAIS(boundingBox, regionName) {
                 width: staticData.width,
             })
                 .where(eq(vessels.mmsi, String(staticData.mmsi)));
+                
             console.log(`Updated static data for MMSI ${staticData.mmsi}`);
         };
     });
@@ -166,7 +164,7 @@ function connectAIS(boundingBox, regionName) {
         ws.on('error', (err) => {
             console.error('WebSocket error:', err.message);
         });
-    }
+    };
 
     ws.on('close', () => {
         console.log('Connection closed');
@@ -177,9 +175,9 @@ function connectAIS(boundingBox, regionName) {
             const data = Buffer.from(JSON.stringify(message));
             ws.emit('message', data);
         }
-    }
-}
+    };
+};
 
-connectAIS([[48.0, -5.0], [52.0, 5.0]], 'english-channel');
+connectAIS();
 
 export { connectAIS };
