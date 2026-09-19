@@ -67,9 +67,42 @@ function VesselsMap() {
             zoom: 4,
         });
 
-        map.current.on('load', () => {
+        map.current.on('load', async () => {
             console.log('map is ready');
             setMapLoaded(true);
+
+            interface Region {
+                name: string;
+                boundingBox: [[number, number], [number, number]];
+                preciseArea: [number, number][];
+            }
+
+            const res = await fetch('/api/region');
+            const regions = await res.json() as Record<string, Region>;
+
+            const borderGeoJSON = {
+                type: 'FeatureCollection',
+                features: Object.values(regions).map((r) => ({
+                    type: 'Feature',
+                    properties: { name: r.name },
+                    geometry: { type: 'Polygon', coordinates: [r.preciseArea] },
+                })),
+            };
+
+            if (!map.current!.getSource('region-borders')) {
+                map.current!.addSource('region-borders', { type: 'geojson', data: borderGeoJSON });
+
+                map.current!.addLayer({
+                    id: 'region-borders-line',
+                    type: 'line',
+                    source: 'region-borders',
+                    paint: {
+                        'line-color': '#2F4F4F',
+                        'line-width': 2,
+                        'line-dasharray': [3, 2],
+                    },
+                });
+            };
         });
     }, []);
 
