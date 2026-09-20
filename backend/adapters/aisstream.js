@@ -26,8 +26,8 @@ function getRealRegion(lat, lng) {
         if (booleanPointInPolygon(vesselPoint, regionPolygon)) {
             return key;
         }
-        return 'outside-region'
     }
+    return 'outside-region';
 }
 
 let ws;

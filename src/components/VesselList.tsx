@@ -89,10 +89,11 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
         <div className="space-y-4">
             <select value={region} onChange={handleRegionChange} className="border border-gray-300 rounded p-2">
                 <option value={"english-channel"}>English Channel</option>
-                <option value={"malacca"}>Singapore / Malacca Strait</option>
-                <option value={"hormuz"}>Strait of Hormuz</option>
-                <option value={"suez"}>Suez Canal</option>
-                <option value={"cook-strait"}>Cook Strait, New Zealand</option>
+                <option value={"malacca"}>Malacca Strait</option>
+                <option value={"new-zealand"}>New Zealand</option>
+                <option value={"tokyo-bay"}>Tokyo Bay</option>
+                <option value={"hong-kong"}>Hong Kong</option>
+                <option value={"vancouver"}>Vancouver</option>
             </select>
 
             <p className="font-xl text-xs">

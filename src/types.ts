@@ -1,1 +1,1 @@
-export type RegionKey = 'english-channel' | 'malacca' | 'hormuz' | 'suez' | 'cook-strait';
+export type RegionKey = 'english-channel' | 'malacca' | 'new-zealand' | 'tokyo-bay' | 'hong-kong' | 'vancouver';
