@@ -18,7 +18,7 @@ dotenv.config({ path: new URL('../.env', import.meta.url).pathname });
 const regionPolygons = Object.entries(REGIONS).map(([key, region]) => ({
     key,
     polygon: polygon([region.preciseArea]),
-})); // 5 polygons (for 5 precise regions) get built befor running the function below (instead of per message)
+})); // 5 polygons built instead of building per message
 
 function getRealRegion(lat, lng) {
     const vesselPoint = point([lng, lat]);
@@ -91,7 +91,6 @@ function connectAIS() {
                 APIKey: process.env.AISSTREAM_API_KEY,
                 BoundingBoxes: boundingBoxes,
             };
-            console.log('Subscribing with:', JSON.stringify(boundingBoxes));
             ws.send(JSON.stringify(subscriptionMessage));
             console.log('Connected and subscribed to AIS stream');
         });

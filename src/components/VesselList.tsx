@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import type { RegionKey } from '../types'
 
 interface Vessel {
     id: number;
@@ -36,8 +37,8 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
     nameOnly: boolean;
     imoOnly: boolean;
     hasFlag: boolean;
-    region: 'english-channel' | 'malacca' | 'hormuz' | 'suez' | 'cook-strait';
-    setRegion: (region: 'english-channel' | 'malacca' | 'hormuz' | 'suez' | 'cook-strait') => void;
+    region: RegionKey;
+    setRegion: (region: RegionKey) => void;
 }) {
     const [vessels, setVessels] = useState<Vessel[]>([]);
     const [loading, setLoading] = useState(true);
@@ -69,7 +70,7 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
     }, []);
 
     async function handleRegionChange(e: React.ChangeEvent<HTMLSelectElement>) {
-        setRegion(e.target.value);
+        setRegion(e.target.value as RegionKey);
     }
 
     const sorted = [...vessels].sort((a, b) => {

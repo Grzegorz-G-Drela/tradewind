@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
+import type { RegionKey } from '../types';
 
 maplibregl.setWorkerUrl(workerUrl);
 
@@ -22,10 +23,16 @@ type Port = {
     lon: number,
 }
 
+interface Region {
+    name: string;
+    boundingBox: [[number, number], [number, number]];
+    preciseArea: [number, number][];
+}
 
-function VesselsMap({ region, setRegion} : {
-    region: 'english-channel' | 'malacca' | 'hormuz' | 'suez' | 'cook-strait';
-    setRegion: (region: 'english-channel' | 'malacca' | 'hormuz' | 'suez' | 'cook-strait') => void;
+
+function VesselsMap({ region, setRegion }: {
+    region: RegionKey;
+    setRegion: (region: RegionKey) => void;
 }) {
 
     const mapContainer = useRef<HTMLDivElement>(null);
@@ -33,6 +40,8 @@ function VesselsMap({ region, setRegion} : {
 
     const [vessels, setVessels] = useState<Vessel[]>([]);
     const [ports, setPorts] = useState<Port[]>([]);
+
+    const [regionsData, setRegionsData] = useState<Record<string, Region> | null>(null);
 
     const zoomLevel = useRef(1);
     const [zoomState, setZoomState] = useState(4);
@@ -51,9 +60,10 @@ function VesselsMap({ region, setRegion} : {
                     setVessels(data);
                 });
         }
+        loadVessels();
         const intervalId = setInterval(loadVessels, 3000);
         return () => clearInterval(intervalId);
-    }, []);
+    }, [region]);
 
     useEffect(() => {
         fetch('/api/ports')
@@ -73,20 +83,15 @@ function VesselsMap({ region, setRegion} : {
             console.log('map is ready');
             setMapLoaded(true);
 
-            interface Region {
-                name: string;
-                boundingBox: [[number, number], [number, number]];
-                preciseArea: [number, number][];
-            }
-
             const res = await fetch('/api/region');
             const regions = await res.json() as Record<string, Region>;
+            setRegionsData(regions);
 
             const borderGeoJSON = {
                 type: 'FeatureCollection',
-                features: Object.values(regions).map((r) => ({
+                features: Object.entries(regions).map(([key, r]) => ({
                     type: 'Feature',
-                    properties: { name: r.name },
+                    properties: { name: r.name, key },
                     geometry: { type: 'Polygon', coordinates: [r.preciseArea] },
                 })),
             };
@@ -104,11 +109,45 @@ function VesselsMap({ region, setRegion} : {
                         'line-dasharray': [3, 2],
                     },
                 });
-            };
+
+                map.current!.addLayer({
+                    id: 'region-borders-fill',
+                    type: 'fill',
+                    source: 'region-borders',
+                    paint: {
+                        'fill-color': '#2F4F4F',
+                        'fill-opacity': 0,
+                    }
+                }, 'region-borders-line');
+
+                map.current!.on('mouseenter', 'region-borders-fill', () => {
+                    map.current!.getCanvas().style.cursor = 'pointer';
+                });
+                map.current!.on('mouseleave', 'region-borders-fill', () => {
+                    map.current!.getCanvas().style.cursor = '';
+                });
+                map.current!.on('click', 'region-borders-fill', (e) => {
+                    const feature = e.features![0];
+                    const key = feature.properties!.key as string;
+                    setRegion(key as RegionKey)
+                });
+            }
         });
     }, []);
 
+    useEffect(() => {
+        if (!map.current || !mapLoaded || !regionsData) return;
 
+        const selected = regionsData[region];
+        if (!selected) return;
+
+        const bounds = selected.preciseArea.reduce(
+            (b, coord) => b.extend(coord as [number, number]),
+            new maplibregl.LngLatBounds(selected.preciseArea[0], selected.preciseArea[0])
+        );
+
+        map.current.fitBounds(bounds, { padding: 40, duration: 1000 });
+    }, [region, regionsData, mapLoaded ]);
 
     useEffect(() => {
         if (!map.current || !mapLoaded || !dockingVesselsLoaded || !movingVesselsLoaded) return;

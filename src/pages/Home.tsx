@@ -2,6 +2,8 @@ import VesselList from "../components/VesselList";
 import VesselMap from "../components/VesselMap";
 import VesselControls from "../components/VesselControls";
 import { useState } from "react";
+import type { RegionKey } from '../types'
+
 
 
 function Home() {
@@ -11,7 +13,7 @@ function Home() {
     const [nameOnly, setNameOnly] = useState<boolean>(false);
     const [imoOnly, setImoOnly] = useState<boolean>(false);
     const [hasFlag, setHasFlag] = useState(false);
-    const [region, setRegion] = useState('english-channel');
+    const [region, setRegion] = useState<RegionKey>('english-channel');
 
     return (
         <div className="h-screen flex overflow-hidden">

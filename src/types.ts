@@ -1,0 +1,1 @@
+export type RegionKey = 'english-channel' | 'malacca' | 'hormuz' | 'suez' | 'cook-strait';
