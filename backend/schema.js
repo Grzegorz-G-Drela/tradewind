@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, integer, decimal, timestamp, text } from 'drizzle-orm/pg-core';
+import { pgTable, serial, varchar, integer, decimal, timestamp, index } from 'drizzle-orm/pg-core';
 
 const vessels = pgTable('vessels', {
     created_at: timestamp('created_at').defaultNow().notNull(),
@@ -10,18 +10,27 @@ const vessels = pgTable('vessels', {
     flag: varchar('flag', { length: 50 }),
     length: integer('length'),
     width: integer('width'),
-    region: varchar('region', {length: 20}),
+    region: varchar('region', { length: 20 }),
 });
 
-const vessel_positions = pgTable('vessel_positions', {
-    id: serial('id').primaryKey(),
-    vessel_id: integer('vessel_id').references(() => vessels.id).notNull(),
-    lat: decimal('lat', { precision: 9, scale: 6 }).notNull(),
-    lon: decimal('lon', { precision: 9, scale: 6 }).notNull(),
-    speed: decimal('speed', { precision: 5, scale: 2 }),
-    heading: integer('heading'),
-    timestamp: timestamp('timestamp').notNull()
-});
+const vessel_positions = pgTable(
+    'vessel_positions',
+    {
+        id: serial('id').primaryKey(),
+        vessel_id: integer('vessel_id').references(() => vessels.id).notNull(),
+        lat: decimal('lat', { precision: 9, scale: 6 }).notNull(),
+        lon: decimal('lon', { precision: 9, scale: 6 }).notNull(),
+        speed: decimal('speed', { precision: 5, scale: 2 }),
+        heading: integer('heading'),
+        timestamp: timestamp('timestamp').notNull()
+    },
+    (table) => [
+        index('idx_positions_vessel_time').on(
+            table.vessel_id,
+            table.timestamp.desc()
+        ),
+    ]
+);
 
 const ports = pgTable('ports', {
     id: serial('id').primaryKey(),
@@ -42,7 +51,7 @@ const port_calls = pgTable('port_calls', {
 
 const trade_flows = pgTable('trade_flows', {
     id: serial('id').primaryKey(),
-    reporter_code:integer('reporter_code').notNull(),
+    reporter_code: integer('reporter_code').notNull(),
     partner_code: integer('partner_code').notNull(),
     commodity_code: varchar('commodity_code', { length: 10 }).notNull(),
     trade_value_usd: decimal('trade_value_usd', { precision: 20, scale: 2 }),

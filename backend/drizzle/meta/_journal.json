@@ -8,6 +8,13 @@
       "when": 1781314076592,
       "tag": "0000_giant_franklin_storm",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789944381138,
+      "tag": "0001_eminent_jane_foster",
+      "breakpoints": true
     }
   ]
 }
