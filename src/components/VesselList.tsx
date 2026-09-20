@@ -29,17 +29,18 @@ function formatTimeStamp(isoString: string): string {
     return `(${relative}) ${datePart} at ${timePart}`;
 }
 
-function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFlag }: {
+function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFlag, region, setRegion }: {
     searchTerm: string;
     sortOrder: 'asc' | 'desc';
     sortField: 'name' | 'mmsi';
     nameOnly: boolean;
     imoOnly: boolean;
     hasFlag: boolean;
+    region: 'english-channel' | 'malacca' | 'hormuz' | 'suez' | 'cook-strait';
+    setRegion: (region: 'english-channel' | 'malacca' | 'hormuz' | 'suez' | 'cook-strait') => void;
 }) {
     const [vessels, setVessels] = useState<Vessel[]>([]);
     const [loading, setLoading] = useState(true);
-    const [region, setRegion] = useState('english-channel');
     const [lastUpdated, setLastUpdated] = useState(null);
 
     useEffect(() => {
@@ -68,14 +69,7 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
     }, []);
 
     async function handleRegionChange(e: React.ChangeEvent<HTMLSelectElement>) {
-        const newRegion = e.target.value;
-        setRegion(newRegion);
-
-        await fetch('/api/region', {
-            method: 'POST',
-            headers: { 'Content-type': 'application/json' },
-            body: JSON.stringify({ region: newRegion }),
-        });
+        setRegion(e.target.value);
     }
 
     const sorted = [...vessels].sort((a, b) => {
@@ -96,9 +90,8 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
                 <option value={"english-channel"}>English Channel</option>
                 <option value={"malacca"}>Singapore / Malacca Strait</option>
                 <option value={"hormuz"}>Strait of Hormuz</option>
-                <option value={"hormuz-wide"}>Strait of Hormuz WIDE</option>
                 <option value={"suez"}>Suez Canal</option>
-                <option value={"dover"}>Dover Strait</option>
+                <option value={"cook-strait"}>Cook Strait, New Zealand</option>
             </select>
 
             <p className="font-xl text-xs">

@@ -23,7 +23,10 @@ type Port = {
 }
 
 
-function VesselsMap() {
+function VesselsMap({ region, setRegion} : {
+    region: 'english-channel' | 'malacca' | 'hormuz' | 'suez' | 'cook-strait';
+    setRegion: (region: 'english-channel' | 'malacca' | 'hormuz' | 'suez' | 'cook-strait') => void;
+}) {
 
     const mapContainer = useRef<HTMLDivElement>(null);
     const map = useRef<maplibregl.Map | null>(null);
@@ -38,7 +41,6 @@ function VesselsMap() {
     const [dockingVesselsLoaded, setDockingVesselsLoaded] = useState(false);
     const [movingVesselsLoaded, setMovingVesselsLoaded] = useState(false);
 
-    let region = 'english-channel';
 
 
     useEffect(() => {

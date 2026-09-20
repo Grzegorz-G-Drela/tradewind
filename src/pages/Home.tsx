@@ -11,6 +11,7 @@ function Home() {
     const [nameOnly, setNameOnly] = useState<boolean>(false);
     const [imoOnly, setImoOnly] = useState<boolean>(false);
     const [hasFlag, setHasFlag] = useState(false);
+    const [region, setRegion] = useState('english-channel');
 
     return (
         <div className="h-screen flex overflow-hidden">
@@ -44,15 +45,20 @@ function Home() {
                             nameOnly={nameOnly}
                             imoOnly={imoOnly}
                             hasFlag={hasFlag}
+                            region={region}
+                            setRegion={setRegion}
                         />
                     </div>
                 </div>
             </div>
 
             <div className="flex-1">
-                <VesselMap/>
+                <VesselMap
+                    region={region}
+                    setRegion={setRegion}
+                />
             </div>
-            
+
         </div>
     );
 }
