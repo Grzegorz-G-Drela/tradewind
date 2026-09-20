@@ -15,12 +15,19 @@ const require = createRequire(import.meta.url);
 dotenv.config({ path: new URL('../.env', import.meta.url).pathname });
 
 
-const channelPolygon = polygon([REGIONS['english-channel'].preciseArea]);
-// takes the 13 corner points from regions.js and turns them into an actual shape Turf can check against
+const regionPolygons = Object.entries(REGIONS).map(([key, region]) => ({
+    key,
+    polygon: polygon([region.preciseArea]),
+})); // 5 polygons (for 5 precise regions) get built befor running the function below (instead of per message that was causing CPU spike)
 
 function getRealRegion(lat, lng) {
-    const inChannel = booleanPointInPolygon(point([lng, lat]), channelPolygon);
-    return inChannel ? 'english-channel' : 'outside-region';
+    const vesselPoint = point([lng, lat]);
+    for (const { key, polygon: regionPolygon } of regionPolygons) {
+        if (booleanPointInPolygon(vesselPoint, regionPolygon)) {
+            return key;
+        }
+        return 'outside-region'
+    }
 }
 
 let ws;
