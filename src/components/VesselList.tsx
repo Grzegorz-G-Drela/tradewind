@@ -1,13 +1,6 @@
-import { useState, useEffect } from "react";
-import type { RegionKey } from '../types'
+import { useState, useEffect, type Dispatch, type SetStateAction } from "react";
+import type { RegionKey, Vessel } from '../types'
 
-interface Vessel {
-    id: number;
-    mmsi: string;
-    name: string | null;
-    imo: string | null;
-    flag: string | null;
-}
 
 function formatTimeStamp(isoString: string): string {
     const timestamp = new Date(isoString);
@@ -30,7 +23,7 @@ function formatTimeStamp(isoString: string): string {
     return `(${relative}) ${datePart} at ${timePart}`;
 }
 
-function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFlag, region, setRegion }: {
+function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFlag, region, setRegion, selectedVessel, setSelectedVessel }: {
     searchTerm: string;
     sortOrder: 'asc' | 'desc';
     sortField: 'name' | 'mmsi';
@@ -39,6 +32,8 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
     hasFlag: boolean;
     region: RegionKey;
     setRegion: (region: RegionKey) => void;
+    selectedVessel: Vessel | null;
+    setSelectedVessel: Dispatch<SetStateAction<Vessel | null>>;
 }) {
     const [vessels, setVessels] = useState<Vessel[]>([]);
     const [loading, setLoading] = useState(true);
@@ -114,7 +109,9 @@ function VesselList({ searchTerm, sortOrder, sortField, nameOnly, imoOnly, hasFl
                             .map((vessel) => (
                                 <li
                                     key={vessel.mmsi}
-                                    className="p-2 border border-gray-200 rounded"
+                                    onClick={() => setSelectedVessel(vessel)}
+                                    className={`p-2 border border-gray-200 rounded cursor-pointer
+                                        ${selectedVessel?.mmsi === vessel.mmsi ? 'bg-blue-100' : ''}`}
                                 >
                                     {vessel.mmsi} - {vessel.name}
                                 </li>

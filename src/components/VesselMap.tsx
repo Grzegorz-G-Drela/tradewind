@@ -1,19 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
-import type { RegionKey } from '../types';
+import type { RegionKey, Vessel } from '../types';
 
 maplibregl.setWorkerUrl(workerUrl);
-
-type Vessel = {
-    name: string,
-    mmsi: string,
-    lat: number,
-    lng: number,
-    speed: number,
-    heading: number,
-}
 
 type Port = {
     locode: string,
@@ -30,20 +21,23 @@ interface Region {
 }
 
 
-function VesselsMap({ region, setRegion }: {
+function VesselsMap({ region, setRegion, selectedVessel, setSelectedVessel }: {
     region: RegionKey;
     setRegion: (region: RegionKey) => void;
+    selectedVessel: Vessel | null;
+    setSelectedVessel: Dispatch<SetStateAction<Vessel | null>>;
+
 }) {
 
     const mapContainer = useRef<HTMLDivElement>(null);
     const map = useRef<maplibregl.Map | null>(null);
+    const zoomLevel = useRef(1);
+    const activePopup = useRef<maplibregl.Popup | null>(null);
 
     const [vessels, setVessels] = useState<Vessel[]>([]);
     const [ports, setPorts] = useState<Port[]>([]);
-
     const [regionsData, setRegionsData] = useState<Record<string, Region> | null>(null);
-
-    const zoomLevel = useRef(1);
+    
     const [zoomState, setZoomState] = useState(4);
     const [mapLoaded, setMapLoaded] = useState(false);
     const [portIconsLoaded, setPortIconsLoaded] = useState(false);
@@ -147,7 +141,7 @@ function VesselsMap({ region, setRegion }: {
         );
 
         map.current.fitBounds(bounds, { padding: 40, duration: 1000 });
-    }, [region, regionsData, mapLoaded ]);
+    }, [region, regionsData, mapLoaded]);
 
     useEffect(() => {
         if (!map.current || !mapLoaded || !dockingVesselsLoaded || !movingVesselsLoaded) return;
@@ -200,7 +194,9 @@ function VesselsMap({ region, setRegion }: {
             });
             map.current.on('click', 'vessels-layer', (e) => {
                 const feature = e.features![0];
-                new maplibregl.Popup()
+                activePopup.current?.remove();
+
+                activePopup.current = new maplibregl.Popup()
                     .setLngLat(feature.geometry.coordinates as [number, number])
                     .setHTML(
                         `<strong>${feature.properties.name}</strong>
@@ -329,6 +325,28 @@ function VesselsMap({ region, setRegion }: {
         };
         img.src = `data:image/svg+xml;base64,${btoa(triangleSVG)}`;
     }, []);
+
+    useEffect(() => {
+        if (!selectedVessel || !map.current) return;
+
+        map.current.flyTo({
+            center: [selectedVessel.lng, selectedVessel.lat],
+            zoom: 10,
+            duration: 800
+        });
+
+        activePopup.current?.remove();
+        
+        activePopup.current = new maplibregl.Popup()
+            .setLngLat([selectedVessel.lng, selectedVessel.lat])
+            .setHTML(
+                `<strong>${selectedVessel.name}</strong>
+                        <br>Heading: ${selectedVessel.heading}&deg;
+                        <br>Speed: ${selectedVessel.speed} knots
+                        <br>Status: ${selectedVessel.speed < 1 ? 'Stationary' : 'Moving'}`)
+            .addTo(map.current);
+
+    }, [selectedVessel]);
 
     return <div ref={mapContainer} style={{ width: '100%', height: '100%' }} />;
 }
