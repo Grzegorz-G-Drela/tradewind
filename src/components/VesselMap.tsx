@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
@@ -21,12 +21,10 @@ interface Region {
 }
 
 
-function VesselsMap({ region, setRegion, selectedVessel, setSelectedVessel }: {
+function VesselsMap({ region, setRegion, selectedVessel }: {
     region: RegionKey;
     setRegion: (region: RegionKey) => void;
     selectedVessel: Vessel | null;
-    setSelectedVessel: Dispatch<SetStateAction<Vessel | null>>;
-
 }) {
 
     const mapContainer = useRef<HTMLDivElement>(null);

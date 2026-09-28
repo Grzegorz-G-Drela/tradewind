@@ -61,7 +61,6 @@ function Home() {
                     region={region}
                     setRegion={setRegion}
                     selectedVessel={selectedVessel}
-                    setSelectedVessel={setSelectedVessel}
                 />
             </div>
 
