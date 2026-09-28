@@ -1,5 +1,5 @@
 import { db } from '../db.js';
-import { vessels, vessel_positions } from '../schema.js';
+import { vessels, vessel_positions, ports, port_calls } from '../schema.js';
 import { eq } from 'drizzle-orm';
 import WebSocket from 'ws';
 import { getFlagFromMmsi } from '../flagLookup.js';
@@ -10,10 +10,19 @@ import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import { point, polygon } from '@turf/helpers';
 // point() = turn a lat/lng into something Turf understands. polygon() = turn a list of corners into a shape
 import { REGIONS } from '../regions.js';
+import { checkIfDocked } from '../server/utils/portCallDetection.js';
 
 const require = createRequire(import.meta.url);
 dotenv.config({ path: new URL('../.env', import.meta.url).pathname });
 
+let cachedPorts = [];
+
+async function loadPortsCache() {
+    cachedPorts = await db.select().from(ports);
+    console.log(`Loaded ${cachedPorts.length} ports into cache.`);
+}
+
+await loadPortsCache();
 
 const regionPolygons = Object.entries(REGIONS).map(([key, region]) => ({
     key,
@@ -36,6 +45,7 @@ const USE_MOCK = process.env.USE_MOCK === 'true';
 
 const lastWriteTime = new Map();
 const THROTTLE_MS = 60 * 1000;
+const currentlyDocked = new Map();
 
 function trimmedName(rawName) {
     if (rawName === null) return null;
@@ -135,6 +145,37 @@ function connectAIS() {
                     new Date() :
                     new Date(positionData.timestamp),
             });
+
+            const dockedPort = checkIfDocked(
+                { lat: positionData.latitude, lon: positionData.longitude, speed: positionData.sog },
+                cachedPorts
+            );
+
+            const wasDocked = currentlyDocked.has(vesselId);
+
+            if (dockedPort && !wasDocked) {
+                // just arrived - insert new row
+                const [newCall] = await db.insert(port_calls).values({
+                    vessel_id: vesselId,
+                    port_id: dockedPort.id,
+                    arrived_at: new Date(),
+                    departed_at: null,
+                }).returning();
+                
+                currentlyDocked.set(vesselId, newCall.id);
+                console.log(`Vessel ${positionData.mmsi} arrived at ${dockedPort.name}`);
+
+            } else if (!dockedPort && wasDocked) {
+                //just left - close the open row
+                const callId = currentlyDocked.get(vesselId);
+
+                await db.update(port_calls)
+                    .set({ departed_at: new Date() })
+                    .where(eq(port_calls.id, callId));
+
+                    currentlyDocked.delete(vesselId);
+                    console.log(`Vessel ${positionData.mmsi} departed`);
+            }
 
             console.log(`Saved position for MMSI ${positionData.mmsi}`);
 
