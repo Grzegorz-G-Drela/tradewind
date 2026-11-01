@@ -16,6 +16,7 @@ const require = createRequire(import.meta.url);
 dotenv.config({ path: new URL('../.env', import.meta.url).pathname });
 
 let cachedPorts = [];
+let lastMessageAt = Date.now();
 
 async function loadPortsCache() {
     cachedPorts = await db.select().from(ports);
@@ -113,6 +114,7 @@ function connectAIS() {
 
     ws.on('message', async (data) => {
         // message handler
+        lastMessageAt = Date.now();
         const aisMessage = JSON.parse(data);
 
         if (aisMessage.MessageType === 'PositionReport') {
@@ -229,5 +231,15 @@ function connectAIS() {
 };
 
 connectAIS();
+
+const SILENCE_LIMIT_MS = 5 * 60 * 1000;
+
+setInterval(() => {
+    const silentFor = Date.now() - lastMessageAt;
+    if (silentFor > SILENCE_LIMIT_MS) {
+        console.error(`No AIS data for ${Math.round(silentFor / 1000)}s. Exiting, so pm2 restarts.`);
+        process.exit(1);
+    }
+}, 30 * 1000);
 
 export { connectAIS };
