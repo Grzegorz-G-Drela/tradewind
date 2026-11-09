@@ -190,7 +190,10 @@ function connectAIS() {
                 length: aisMessage.Message.ShipStaticData.Dimension.A +
                     aisMessage.Message.ShipStaticData.Dimension.B,
                 width: aisMessage.Message.ShipStaticData.Dimension.C +
-                    aisMessage.Message.ShipStaticData.Dimension.D
+                    aisMessage.Message.ShipStaticData.Dimension.D,
+                callsign: trimmedName(aisMessage.Message.ShipStaticData.CallSign),
+                destination: trimmedName(aisMessage.Message.ShipStaticData.Destination),
+                draught: aisMessage.Message.ShipStaticData.MaximumStaticDraught
             };
 
             const vesselId = await findOrCreateVessel(staticData.name, staticData.mmsi);
@@ -203,6 +206,9 @@ function connectAIS() {
                 vessel_type: String(staticData.vessel_type),
                 length: staticData.length,
                 width: staticData.width,
+                callsign: staticData.callsign,
+                destination: staticData.destination,
+                draught: staticData.draught
             })
                 .where(eq(vessels.mmsi, String(staticData.mmsi)));
                 
