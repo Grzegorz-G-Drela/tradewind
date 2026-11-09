@@ -15,6 +15,13 @@
       "when": 1789944381138,
       "tag": "0001_eminent_jane_foster",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794180067449,
+      "tag": "0002_secret_scrambler",
+      "breakpoints": true
     }
   ]
 }

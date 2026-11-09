@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, integer, decimal, timestamp, index } from 'drizzle-orm/pg-core';
+import { pgTable, serial, varchar, integer, real, decimal, timestamp, index } from 'drizzle-orm/pg-core';
 
 const vessels = pgTable('vessels', {
     created_at: timestamp('created_at').defaultNow().notNull(),
@@ -11,6 +11,9 @@ const vessels = pgTable('vessels', {
     length: integer('length'),
     width: integer('width'),
     region: varchar('region', { length: 20 }),
+    callsign: varchar('callsign', { length: 10 }),
+    destination: varchar('destination', { length: 30 }),
+    draught: real('draught'),
 });
 
 const vessel_positions = pgTable(
